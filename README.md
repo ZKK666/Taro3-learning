@@ -60,11 +60,20 @@
 - `packagePublish` - 视频选择、编辑、发布
 - `packageMessage` - 消息中心、通知列表
 
+## 环境要求
+
+- **Node.js**: >= 16.0.0 (推荐 18.x LTS)
+- **npm**: >= 8.0.0
+- **微信开发者工具**: 最新稳定版
+
 ## 快速开始
 
 ### 安装依赖
 
 ```bash
+# 检查 Node 版本
+node -v
+
 npm install
 # 或
 yarn
