@@ -55,13 +55,27 @@ export const mockTopics: TopicInfo[] = [
   }
 ]
 
-// Mock 视频数据
-export const mockVideos: VideoInfo[] = Array.from({ length: 50 }, (_, i) => ({
+// 多样化的视频URL
+const videoUrls = [
+  'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+  'https://www.w3schools.com/html/mov_bbb.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
+]
+
+// Mock 视频数据 - 100条数据用于更好的滚动体验
+export const mockVideos: VideoInfo[] = Array.from({ length: 100 }, (_, i) => ({
   id: `video_${String(i + 1).padStart(3, '0')}`,
   title: getRandomTitle(i),
   description: getRandomDescription(i),
   coverUrl: `https://picsum.photos/720/1280?random=${i + 1}`,
-  videoUrl: `https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4`,
+  videoUrl: videoUrls[i % videoUrls.length],
   duration: Math.floor(15 + Math.random() * 45),
   width: 720,
   height: 1280,
@@ -73,7 +87,7 @@ export const mockVideos: VideoInfo[] = Array.from({ length: 50 }, (_, i) => ({
   isLiked: Math.random() > 0.7,
   isCollected: Math.random() > 0.8,
   author: mockUsers[i % mockUsers.length],
-  topics: [mockTopics[i % mockTopics.length]],
+  topics: [mockTopics[i % mockTopics.length], ...(Math.random() > 0.5 ? [mockTopics[(i + 1) % mockTopics.length]] : [])],
   createTime: getRandomTime(i),
   visibility: 'public'
 }))
@@ -89,7 +103,17 @@ function getRandomTitle(index: number): string {
     '终于学会了这个动作',
     '周末的正确打开方式',
     '来看看我的新作品',
-    '这波操作你给几分'
+    '这波操作你给几分',
+    '绝美日落时分',
+    '探店发现宝藏小店',
+    '三分钟学会这道菜',
+    '今日穿搭分享',
+    '健身打卡第30天',
+    '神仙颜值的咖啡店',
+    '超治愈的手作过程',
+    '被这个视角惊艳到了',
+    '挑战一周不花钱',
+    '这个妆容绝了'
   ]
   return titles[index % titles.length]
 }
@@ -105,7 +129,17 @@ function getRandomDescription(index: number): string {
     '坚持就是胜利 #运动 #健身打卡',
     '慵懒的周末时光 #vlog #日常',
     '希望大家喜欢 #原创 #创作',
-    '你们觉得怎么样？#互动 #评论'
+    '你们觉得怎么样？#互动 #评论',
+    '跟着学起来！超简单 #教程 #技巧',
+    '又是被美食治愈的一天 #美食 #吃货',
+    '这个角度拍太绝了 #摄影 #风景',
+    '新手也能轻松上手 #新手教程',
+    '今日份小确幸 #生活记录 #幸福',
+    '分享给需要的朋友 #实用技巧',
+    '我的爱用好物推荐 #好物分享',
+    '一起来打卡吧 #打卡挑战',
+    '氛围感拉满 #vlog #生活方式',
+    '不允许还有人不知道 #科普 #涨知识'
   ]
   return descriptions[index % descriptions.length]
 }

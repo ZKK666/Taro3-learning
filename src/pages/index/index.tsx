@@ -84,7 +84,7 @@ export default function Index() {
           </Text>
         </View>
         <View className={styles.search} onClick={handleSearch}>
-          <Text className={styles.searchIcon}>🔍</Text>
+          <View className={styles.searchIcon} />
         </View>
       </View>
 

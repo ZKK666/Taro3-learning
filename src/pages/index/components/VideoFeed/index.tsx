@@ -1,13 +1,14 @@
 /**
  * 视频流组件 - 上下滑动切换视频
+ * 性能优化版本
  */
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { View, Swiper, SwiperItem, Video, Image, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useVideoStore, useAppStore } from '@/stores'
 import { formatNumber } from '@/utils/format'
-import { navigateTo, Routes } from '@/utils/navigation'
+import CommentSheet from '@/components/CommentSheet'
 import type { VideoInfo } from '@/types/video'
 import styles from './index.module.scss'
 
@@ -24,22 +25,54 @@ export default function VideoFeed() {
   } = useVideoStore()
   const { systemInfo } = useAppStore()
 
-  const [playing, setPlaying] = useState(true)
-  const videoRefs = useRef<Record<string, any>>({})
+  // 当前正在播放的视频ID
+  const [playingId, setPlayingId] = useState<string>('')
+  // 评论弹窗
+  const [commentVisible, setCommentVisible] = useState(false)
+  const [commentVideoId, setCommentVideoId] = useState('')
+  // 双击检测
+  const lastTapTime = useRef<number>(0)
+  // 视频上下文
+  const videoContextRef = useRef<Taro.VideoContext | null>(null)
 
   // 当前视频列表
   const videoList = currentTab === 'recommend' ? recommendList : followingList
+
+  // 当前视频
+  const currentVideo = videoList[currentIndex]
+
+  // 初始化播放第一个视频
+  useEffect(() => {
+    if (videoList.length > 0 && !playingId) {
+      setPlayingId(videoList[0].id)
+    }
+  }, [videoList, playingId])
+
+  // 切换tab时重置
+  useEffect(() => {
+    if (videoList.length > 0) {
+      setPlayingId(videoList[0].id)
+    }
+  }, [currentTab])
 
   // 滑动切换处理
   const handleSwiperChange = useCallback((e: any) => {
     const newIndex = e.detail.current
     setCurrentIndex(newIndex)
 
+    // 切换播放视频
+    const newVideo = videoList[newIndex]
+    if (newVideo) {
+      setPlayingId(newVideo.id)
+    }
+
     // 预加载下一页
     if (newIndex >= videoList.length - 3) {
-      fetchRecommendVideos()
+      if (currentTab === 'recommend') {
+        fetchRecommendVideos()
+      }
     }
-  }, [videoList.length, setCurrentIndex, fetchRecommendVideos])
+  }, [videoList, currentTab, setCurrentIndex, fetchRecommendVideos])
 
   // 点赞处理
   const handleLike = async (video: VideoInfo) => {
@@ -47,31 +80,72 @@ export default function VideoFeed() {
       await unlikeVideo(video.id)
     } else {
       await likeVideo(video.id)
-      // 点赞动画反馈
       Taro.vibrateShort({ type: 'light' })
     }
   }
 
-  // 评论跳转
-  const handleComment = (videoId: string) => {
-    navigateTo(Routes.COMMENT, { videoId })
+  // 视频点击 - 播放/暂停 + 双击点赞
+  const handleVideoTap = (video: VideoInfo) => {
+    const now = Date.now()
+    const timeDiff = now - lastTapTime.current
+
+    if (timeDiff < 300) {
+      // 双击点赞
+      if (!video.isLiked) {
+        handleLike(video)
+      }
+      lastTapTime.current = 0
+    } else {
+      // 单击播放/暂停
+      lastTapTime.current = now
+      setTimeout(() => {
+        if (lastTapTime.current === now) {
+          togglePlay(video.id)
+        }
+      }, 300)
+    }
   }
 
-  // 用户主页跳转
-  const handleUserProfile = (userId: string) => {
-    navigateTo(Routes.USER, { userId })
+  // 切换播放状态
+  const togglePlay = (videoId: string) => {
+    if (playingId === videoId) {
+      setPlayingId('')
+      // 暂停视频
+      const ctx = Taro.createVideoContext(`video-${videoId}`)
+      ctx?.pause()
+    } else {
+      setPlayingId(videoId)
+      const ctx = Taro.createVideoContext(`video-${videoId}`)
+      ctx?.play()
+    }
   }
 
   // 分享
-  const handleShare = (video: VideoInfo) => {
+  const handleShare = () => {
     Taro.showShareMenu({
       withShareTicket: true
     })
   }
 
-  // 视频播放/暂停
-  const handleVideoTap = () => {
-    setPlaying(!playing)
+  // 打开评论
+  const handleOpenComment = (videoId: string) => {
+    setCommentVideoId(videoId)
+    setCommentVisible(true)
+    // 暂停视频
+    if (playingId) {
+      const ctx = Taro.createVideoContext(`video-${playingId}`)
+      ctx?.pause()
+    }
+  }
+
+  // 关闭评论
+  const handleCloseComment = () => {
+    setCommentVisible(false)
+    // 恢复播放
+    if (playingId) {
+      const ctx = Taro.createVideoContext(`video-${playingId}`)
+      ctx?.play()
+    }
   }
 
   if (videoList.length === 0) {
@@ -82,131 +156,169 @@ export default function VideoFeed() {
     )
   }
 
+  // 只渲染当前视频前后各1个，优化性能
+  const renderIndexes = new Set([
+    Math.max(0, currentIndex - 1),
+    currentIndex,
+    Math.min(videoList.length - 1, currentIndex + 1)
+  ])
+
   return (
-    <Swiper
-      className={styles.swiper}
-      vertical
-      current={currentIndex}
-      onChange={handleSwiperChange}
-      duration={300}
-      style={{ height: `${systemInfo.windowHeight}px` }}
-    >
+    <>
+      <Swiper
+        className={styles.swiper}
+        vertical
+        current={currentIndex}
+        onChange={handleSwiperChange}
+        duration={300}
+        circular={false}
+        easingFunction="easeOutCubic"
+        style={{ height: `${systemInfo.windowHeight}px` }}
+      >
       {videoList.map((video, index) => (
         <SwiperItem key={video.id} className={styles.swiperItem}>
-          <View className={styles.videoContainer}>
-            {/* 视频播放器 */}
-            <Video
-              id={`video-${video.id}`}
-              className={styles.video}
-              src={video.videoUrl}
-              poster={video.coverUrl}
-              loop
-              autoplay={index === currentIndex && playing}
-              showCenterPlayBtn={false}
-              showPlayBtn={false}
-              showFullscreenBtn={false}
-              showProgress={false}
-              controls={false}
-              objectFit="cover"
-              onClick={handleVideoTap}
-            />
+          {renderIndexes.has(index) ? (
+            <View className={styles.videoContainer}>
+              {/* 视频播放器 */}
+              <Video
+                id={`video-${video.id}`}
+                className={styles.video}
+                src={video.videoUrl}
+                poster={video.coverUrl}
+                loop
+                autoplay={video.id === playingId}
+                muted={false}
+                showCenterPlayBtn={false}
+                showPlayBtn={false}
+                showFullscreenBtn={false}
+                showProgress={false}
+                controls={false}
+                objectFit="cover"
+                onClick={() => handleVideoTap(video)}
+                onEnded={() => {
+                  // 循环播放
+                  const ctx = Taro.createVideoContext(`video-${video.id}`)
+                  ctx?.seek(0)
+                  ctx?.play()
+                }}
+              />
 
-            {/* 暂停图标 */}
-            {!playing && index === currentIndex && (
-              <View className={styles.pauseOverlay}>
-                <Text className={styles.pauseIcon}>▶</Text>
-              </View>
-            )}
-
-            {/* 右侧操作栏 */}
-            <View className={styles.actionBar}>
-              {/* 头像 */}
-              <View
-                className={styles.avatarWrapper}
-                onClick={() => handleUserProfile(video.author.id)}
-              >
-                <Image
-                  className={styles.avatar}
-                  src={video.author.avatarUrl}
-                  mode="aspectFill"
-                />
-                {!video.author.isFollowed && (
-                  <View className={styles.followBtn}>
-                    <Text className={styles.followIcon}>+</Text>
-                  </View>
-                )}
-              </View>
-
-              {/* 点赞 */}
-              <View
-                className={styles.actionItem}
-                onClick={() => handleLike(video)}
-              >
-                <Text className={`${styles.actionIcon} ${video.isLiked ? styles.liked : ''}`}>
-                  ❤️
-                </Text>
-                <Text className={styles.actionCount}>
-                  {formatNumber(video.likeCount)}
-                </Text>
-              </View>
-
-              {/* 评论 */}
-              <View
-                className={styles.actionItem}
-                onClick={() => handleComment(video.id)}
-              >
-                <Text className={styles.actionIcon}>💬</Text>
-                <Text className={styles.actionCount}>
-                  {formatNumber(video.commentCount)}
-                </Text>
-              </View>
-
-              {/* 收藏 */}
-              <View className={styles.actionItem}>
-                <Text className={`${styles.actionIcon} ${video.isCollected ? styles.collected : ''}`}>
-                  ⭐
-                </Text>
-                <Text className={styles.actionCount}>
-                  {formatNumber(video.collectCount)}
-                </Text>
-              </View>
-
-              {/* 分享 */}
-              <View
-                className={styles.actionItem}
-                onClick={() => handleShare(video)}
-              >
-                <Text className={styles.actionIcon}>↗️</Text>
-                <Text className={styles.actionCount}>
-                  {formatNumber(video.shareCount)}
-                </Text>
-              </View>
-            </View>
-
-            {/* 底部信息 */}
-            <View className={styles.videoInfo}>
-              <Text
-                className={styles.authorName}
-                onClick={() => handleUserProfile(video.author.id)}
-              >
-                @{video.author.nickname}
-              </Text>
-              <Text className={styles.description}>{video.description}</Text>
-
-              {/* 话题标签 */}
-              {video.topics.length > 0 && (
-                <View className={styles.topics}>
-                  {video.topics.map(topic => (
-                    <Text key={topic.id} className={styles.topic}>
-                      #{topic.name}
-                    </Text>
-                  ))}
+              {/* 暂停图标 */}
+              {playingId !== video.id && index === currentIndex && (
+                <View className={styles.pauseOverlay} onClick={() => togglePlay(video.id)}>
+                  <View className={styles.playIcon} />
                 </View>
               )}
+
+              {/* 右侧操作栏 */}
+              <View className={styles.actionBar}>
+                {/* 头像 */}
+                <View className={styles.avatarWrapper}>
+                  <Image
+                    className={styles.avatar}
+                    src={video.author.avatarUrl}
+                    mode="aspectFill"
+                    lazyLoad
+                  />
+                  {!video.author.isFollowed && (
+                    <View className={styles.followBtn}>
+                      <View className={styles.followIcon} />
+                    </View>
+                  )}
+                </View>
+
+                {/* 点赞 */}
+                <View
+                  className={styles.actionItem}
+                  onClick={() => handleLike(video)}
+                >
+                  <View className={`${styles.heartIcon} ${video.isLiked ? styles.liked : ''}`} />
+                  <Text className={styles.actionCount}>
+                    {formatNumber(video.likeCount)}
+                  </Text>
+                </View>
+
+                {/* 评论 */}
+                <View
+                  className={styles.actionItem}
+                  onClick={() => handleOpenComment(video.id)}
+                >
+                  <View className={styles.commentIcon} />
+                  <Text className={styles.actionCount}>
+                    {formatNumber(video.commentCount)}
+                  </Text>
+                </View>
+
+                {/* 收藏 */}
+                <View className={styles.actionItem}>
+                  <View className={`${styles.starIcon} ${video.isCollected ? styles.collected : ''}`} />
+                  <Text className={styles.actionCount}>
+                    {formatNumber(video.collectCount)}
+                  </Text>
+                </View>
+
+                {/* 分享 */}
+                <View
+                  className={styles.actionItem}
+                  onClick={handleShare}
+                >
+                  <View className={styles.shareIcon} />
+                  <Text className={styles.actionCount}>
+                    {formatNumber(video.shareCount)}
+                  </Text>
+                </View>
+
+                {/* 音乐唱片 */}
+                <View className={styles.musicDisk}>
+                  <Image
+                    className={`${styles.diskImage} ${playingId === video.id ? styles.spinning : ''}`}
+                    src={video.author.avatarUrl}
+                    mode="aspectFill"
+                  />
+                </View>
+              </View>
+
+              {/* 底部信息 */}
+              <View className={styles.videoInfo}>
+                <Text className={styles.authorName}>
+                  @{video.author.nickname}
+                </Text>
+                <Text className={styles.description}>{video.description}</Text>
+
+                {/* 话题标签 */}
+                {video.topics.length > 0 && (
+                  <View className={styles.topics}>
+                    {video.topics.map(topic => (
+                      <Text key={topic.id} className={styles.topic}>
+                        #{topic.name}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+
+                {/* 音乐信息 */}
+                <View className={styles.musicInfo}>
+                  <View className={styles.musicNote} />
+                  <Text className={styles.musicName}>
+                    原声 - {video.author.nickname}
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
+          ) : (
+            // 占位符 - 未渲染的视频
+            <View className={styles.placeholder} />
+          )}
         </SwiperItem>
       ))}
-    </Swiper>
+      </Swiper>
+
+      {/* 评论弹窗 */}
+      <CommentSheet
+        visible={commentVisible}
+        videoId={commentVideoId}
+        onClose={handleCloseComment}
+      />
+    </>
   )
 }

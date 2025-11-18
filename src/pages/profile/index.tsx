@@ -9,9 +9,25 @@ import { formatNumber } from '@/utils/format'
 import { navigateTo, Routes } from '@/utils/navigation'
 import styles from './index.module.scss'
 
+// Mock 作品数据
+const mockWorks = Array.from({ length: 18 }, (_, i) => ({
+  id: `work_${i + 1}`,
+  coverUrl: `https://picsum.photos/300/400?random=work${i + 1}`,
+  playCount: Math.floor(1000 + Math.random() * 99000)
+}))
+
+// Mock 喜欢数据
+const mockLikes = Array.from({ length: 24 }, (_, i) => ({
+  id: `like_${i + 1}`,
+  coverUrl: `https://picsum.photos/300/400?random=like${i + 1}`,
+  playCount: Math.floor(1000 + Math.random() * 99000)
+}))
+
 export default function Profile() {
   const { userInfo, isLogin, fetchUserInfo } = useUserStore()
   const [activeTab, setActiveTab] = useState<'works' | 'likes'>('works')
+  const [works] = useState(mockWorks)
+  const [likes] = useState(mockLikes)
 
   useEffect(() => {
     if (!userInfo) {
@@ -52,8 +68,8 @@ export default function Profile() {
       {/* 顶部操作栏 */}
       <View className={styles.header}>
         <View className={styles.headerActions}>
-          <Text className={styles.actionIcon} onClick={handleMessage}>🔔</Text>
-          <Text className={styles.actionIcon} onClick={handleSettings}>⚙️</Text>
+          <View className={styles.bellIcon} onClick={handleMessage} />
+          <View className={styles.gearIcon} onClick={handleSettings} />
         </View>
       </View>
 
@@ -121,13 +137,55 @@ export default function Profile() {
           </View>
         </View>
 
-        {/* 作品列表占位 */}
+        {/* 作品/喜欢列表 */}
         <View className={styles.worksSection}>
-          <View className={styles.emptyWorks}>
-            <Text className={styles.emptyText}>
-              {activeTab === 'works' ? '暂无作品' : '暂无喜欢的视频'}
-            </Text>
-          </View>
+          {activeTab === 'works' ? (
+            works.length > 0 ? (
+              <View className={styles.videoGrid}>
+                {works.map(work => (
+                  <View key={work.id} className={styles.videoItem}>
+                    <Image
+                      className={styles.videoCover}
+                      src={work.coverUrl}
+                      mode="aspectFill"
+                      lazyLoad
+                    />
+                    <View className={styles.playInfo}>
+                      <View className={styles.playIcon} />
+                      <Text className={styles.playCount}>{formatNumber(work.playCount)}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View className={styles.emptyWorks}>
+                <Text className={styles.emptyText}>暂无作品</Text>
+              </View>
+            )
+          ) : (
+            likes.length > 0 ? (
+              <View className={styles.videoGrid}>
+                {likes.map(like => (
+                  <View key={like.id} className={styles.videoItem}>
+                    <Image
+                      className={styles.videoCover}
+                      src={like.coverUrl}
+                      mode="aspectFill"
+                      lazyLoad
+                    />
+                    <View className={styles.playInfo}>
+                      <View className={styles.playIcon} />
+                      <Text className={styles.playCount}>{formatNumber(like.playCount)}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View className={styles.emptyWorks}>
+                <Text className={styles.emptyText}>暂无喜欢的视频</Text>
+              </View>
+            )
+          )}
         </View>
       </ScrollView>
     </View>
