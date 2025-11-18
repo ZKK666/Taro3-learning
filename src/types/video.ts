@@ -7,6 +7,8 @@ import type { UserInfo } from './user'
 /** 视频信息 */
 export interface VideoInfo {
   id: string
+  /** 内容类型: video-视频, slideshow-图片轮播 */
+  type?: 'video' | 'slideshow'
   /** 视频标题 */
   title: string
   /** 视频描述 */
@@ -15,6 +17,12 @@ export interface VideoInfo {
   coverUrl: string
   /** 视频播放 URL */
   videoUrl: string
+  /** 图片列表（图片轮播用） */
+  images?: string[]
+  /** 背景音乐（图片轮播用） */
+  musicUrl?: string
+  /** 音乐名称 */
+  musicName?: string
   /** 视频时长（秒） */
   duration: number
   /** 视频宽度 */

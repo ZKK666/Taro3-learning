@@ -30,6 +30,8 @@ export default function VideoFeed() {
   // 评论弹窗
   const [commentVisible, setCommentVisible] = useState(false)
   const [commentVideoId, setCommentVideoId] = useState('')
+  // 图片轮播当前索引
+  const [slideIndexes, setSlideIndexes] = useState<Record<string, number>>({})
   // 双击检测
   const lastTapTime = useRef<number>(0)
   // 视频上下文
@@ -179,35 +181,79 @@ export default function VideoFeed() {
         <SwiperItem key={video.id} className={styles.swiperItem}>
           {renderIndexes.has(index) ? (
             <View className={styles.videoContainer}>
-              {/* 视频播放器 */}
-              <Video
-                id={`video-${video.id}`}
-                className={styles.video}
-                src={video.videoUrl}
-                poster={video.coverUrl}
-                loop
-                autoplay={video.id === playingId}
-                muted={false}
-                showCenterPlayBtn={false}
-                showPlayBtn={false}
-                showFullscreenBtn={false}
-                showProgress={false}
-                controls={false}
-                objectFit="cover"
-                onClick={() => handleVideoTap(video)}
-                onEnded={() => {
-                  // 循环播放
-                  const ctx = Taro.createVideoContext(`video-${video.id}`)
-                  ctx?.seek(0)
-                  ctx?.play()
-                }}
-              />
+              {/* 根据类型渲染视频或图片轮播 */}
+              {video.type === 'slideshow' && video.images ? (
+                <>
+                  {/* 图片轮播 */}
+                  <Swiper
+                    className={styles.slideSwiper}
+                    autoplay={index === currentIndex}
+                    interval={3000}
+                    circular
+                    duration={500}
+                    onChange={(e) => {
+                      setSlideIndexes(prev => ({
+                        ...prev,
+                        [video.id]: e.detail.current
+                      }))
+                    }}
+                  >
+                    {video.images.map((img, imgIndex) => (
+                      <SwiperItem key={imgIndex} className={styles.slideItem}>
+                        <Image
+                          className={styles.slideImage}
+                          src={img}
+                          mode="aspectFill"
+                          lazyLoad
+                        />
+                      </SwiperItem>
+                    ))}
+                  </Swiper>
 
-              {/* 暂停图标 */}
-              {playingId !== video.id && index === currentIndex && (
-                <View className={styles.pauseOverlay} onClick={() => togglePlay(video.id)}>
-                  <View className={styles.playIcon} />
-                </View>
+                  {/* 图片索引指示器 */}
+                  <View className={styles.slideIndicator}>
+                    <Text className={styles.indicatorText}>
+                      {(slideIndexes[video.id] || 0) + 1}/{video.images.length}
+                    </Text>
+                  </View>
+
+                  {/* 图片类型标识 */}
+                  <View className={styles.slideshowBadge}>
+                    <View className={styles.imageIcon} />
+                  </View>
+                </>
+              ) : (
+                <>
+                  {/* 视频播放器 */}
+                  <Video
+                    id={`video-${video.id}`}
+                    className={styles.video}
+                    src={video.videoUrl}
+                    poster={video.coverUrl}
+                    loop
+                    autoplay={video.id === playingId}
+                    muted={false}
+                    showCenterPlayBtn={false}
+                    showPlayBtn={false}
+                    showFullscreenBtn={false}
+                    showProgress={false}
+                    controls={false}
+                    objectFit="cover"
+                    onClick={() => handleVideoTap(video)}
+                    onEnded={() => {
+                      const ctx = Taro.createVideoContext(`video-${video.id}`)
+                      ctx?.seek(0)
+                      ctx?.play()
+                    }}
+                  />
+
+                  {/* 暂停图标 */}
+                  {playingId !== video.id && index === currentIndex && (
+                    <View className={styles.pauseOverlay} onClick={() => togglePlay(video.id)}>
+                      <View className={styles.playIcon} />
+                    </View>
+                  )}
+                </>
               )}
 
               {/* 右侧操作栏 */}
@@ -271,7 +317,7 @@ export default function VideoFeed() {
                 {/* 音乐唱片 */}
                 <View className={styles.musicDisk}>
                   <Image
-                    className={`${styles.diskImage} ${playingId === video.id ? styles.spinning : ''}`}
+                    className={`${styles.diskImage} ${(video.type === 'slideshow' ? index === currentIndex : playingId === video.id) ? styles.spinning : ''}`}
                     src={video.author.avatarUrl}
                     mode="aspectFill"
                   />
@@ -300,7 +346,7 @@ export default function VideoFeed() {
                 <View className={styles.musicInfo}>
                   <View className={styles.musicNote} />
                   <Text className={styles.musicName}>
-                    原声 - {video.author.nickname}
+                    {video.musicName || `原声 - ${video.author.nickname}`}
                   </Text>
                 </View>
               </View>

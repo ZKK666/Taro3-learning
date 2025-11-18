@@ -69,28 +69,52 @@ const videoUrls = [
   'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4'
 ]
 
-// Mock 视频数据 - 100条数据用于更好的滚动体验
-export const mockVideos: VideoInfo[] = Array.from({ length: 100 }, (_, i) => ({
-  id: `video_${String(i + 1).padStart(3, '0')}`,
-  title: getRandomTitle(i),
-  description: getRandomDescription(i),
-  coverUrl: `https://picsum.photos/720/1280?random=${i + 1}`,
-  videoUrl: videoUrls[i % videoUrls.length],
-  duration: Math.floor(15 + Math.random() * 45),
-  width: 720,
-  height: 1280,
-  playCount: Math.floor(1000 + Math.random() * 99000),
-  likeCount: Math.floor(100 + Math.random() * 9900),
-  commentCount: Math.floor(10 + Math.random() * 990),
-  shareCount: Math.floor(5 + Math.random() * 495),
-  collectCount: Math.floor(10 + Math.random() * 490),
-  isLiked: Math.random() > 0.7,
-  isCollected: Math.random() > 0.8,
-  author: mockUsers[i % mockUsers.length],
-  topics: [mockTopics[i % mockTopics.length], ...(Math.random() > 0.5 ? [mockTopics[(i + 1) % mockTopics.length]] : [])],
-  createTime: getRandomTime(i),
-  visibility: 'public'
-}))
+// 背景音乐列表
+const musicNames = [
+  '热爱105°C的你',
+  '孤勇者',
+  '爱你',
+  '起风了',
+  '漠河舞厅',
+  '白月光与朱砂痣',
+  '可可托海的牧羊人',
+  '踏山河'
+]
+
+// Mock 视频数据 - 100条数据，混合视频和图片轮播
+export const mockVideos: VideoInfo[] = Array.from({ length: 100 }, (_, i) => {
+  // 每3个中有1个是图片轮播
+  const isSlideshow = i % 3 === 2
+  const imageCount = 3 + Math.floor(Math.random() * 6) // 3-8张图片
+
+  return {
+    id: `video_${String(i + 1).padStart(3, '0')}`,
+    type: isSlideshow ? 'slideshow' : 'video',
+    title: getRandomTitle(i),
+    description: getRandomDescription(i),
+    coverUrl: `https://picsum.photos/720/1280?random=${i + 1}`,
+    videoUrl: isSlideshow ? '' : videoUrls[i % videoUrls.length],
+    images: isSlideshow
+      ? Array.from({ length: imageCount }, (_, j) => `https://picsum.photos/720/1280?random=slide${i}_${j}`)
+      : undefined,
+    musicUrl: isSlideshow ? 'https://example.com/music.mp3' : undefined,
+    musicName: isSlideshow ? musicNames[i % musicNames.length] : undefined,
+    duration: isSlideshow ? imageCount * 3 : Math.floor(15 + Math.random() * 45),
+    width: 720,
+    height: 1280,
+    playCount: Math.floor(1000 + Math.random() * 99000),
+    likeCount: Math.floor(100 + Math.random() * 9900),
+    commentCount: Math.floor(10 + Math.random() * 990),
+    shareCount: Math.floor(5 + Math.random() * 495),
+    collectCount: Math.floor(10 + Math.random() * 490),
+    isLiked: Math.random() > 0.7,
+    isCollected: Math.random() > 0.8,
+    author: mockUsers[i % mockUsers.length],
+    topics: [mockTopics[i % mockTopics.length], ...(Math.random() > 0.5 ? [mockTopics[(i + 1) % mockTopics.length]] : [])],
+    createTime: getRandomTime(i),
+    visibility: 'public'
+  }
+})
 
 function getRandomTitle(index: number): string {
   const titles = [
