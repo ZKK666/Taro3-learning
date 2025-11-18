@@ -42,8 +42,6 @@ export default function VideoFeed() {
   const lastTapTime = useRef<number>(0)
   // 视频上下文
   const videoContextRef = useRef<Taro.VideoContext | null>(null)
-  // 防止重复切换播放状态
-  const isTogglingRef = useRef<boolean>(false)
 
   // ==================== 弹幕相关状态 ====================
   // 弹幕开关
@@ -136,10 +134,6 @@ export default function VideoFeed() {
 
   // 切换播放状态
   const togglePlay = (videoId: string) => {
-    // 防止短时间内重复调用（解决事件冒泡问题）
-    if (isTogglingRef.current) return
-    isTogglingRef.current = true
-
     if (playingId === videoId) {
       setPlayingId('')
       // 暂停视频
@@ -150,11 +144,6 @@ export default function VideoFeed() {
       const ctx = Taro.createVideoContext(`video-${videoId}`)
       ctx?.play()
     }
-
-    // 350ms 后解除锁定（略大于双击检测的 300ms）
-    setTimeout(() => {
-      isTogglingRef.current = false
-    }, 350)
   }
 
   // 分享
