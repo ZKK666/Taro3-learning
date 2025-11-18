@@ -5,3 +5,4 @@
 export * from './format'
 export * from './storage'
 export * from './navigation'
+export * from './auth'

@@ -1,10 +1,14 @@
 /**
  * 个人中心页面
+ *
+ * 展示用户个人信息、作品和喜欢列表
+ * 集成登录状态管理，未登录时显示登录引导
  */
 
 import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
-import { useUserStore } from '@/stores'
+import Taro from '@tarojs/taro'
+import { useUserStore, useAuth } from '@/stores/user'
 import { formatNumber } from '@/utils/format'
 import { navigateTo, Routes } from '@/utils/navigation'
 import styles from './index.module.scss'
@@ -24,16 +28,11 @@ const mockLikes = Array.from({ length: 24 }, (_, i) => ({
 }))
 
 export default function Profile() {
-  const { userInfo, isLogin, fetchUserInfo } = useUserStore()
+  // 使用新的登录状态管理
+  const { isLoggedIn, userInfo, userStats, isInitialized, logout } = useAuth()
   const [activeTab, setActiveTab] = useState<'works' | 'likes'>('works')
   const [works] = useState(mockWorks)
   const [likes] = useState(mockLikes)
-
-  useEffect(() => {
-    if (!userInfo) {
-      fetchUserInfo()
-    }
-  }, [])
 
   // 跳转到消息中心
   const handleMessage = () => {
@@ -42,15 +41,40 @@ export default function Profile() {
 
   // 跳转到设置
   const handleSettings = () => {
-    // TODO: 设置页面
+    Taro.navigateTo({ url: '/packageSettings/pages/index/index' })
   }
 
   // 跳转到登录
   const handleLogin = () => {
-    navigateTo(Routes.LOGIN)
+    Taro.navigateTo({ url: '/pages/login/index' })
   }
 
-  if (!isLogin || !userInfo) {
+  // 处理登出
+  const handleLogout = () => {
+    Taro.showModal({
+      title: '提示',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          logout()
+        }
+      }
+    })
+  }
+
+  // 等待初始化完成
+  if (!isInitialized) {
+    return (
+      <View className={styles.container}>
+        <View className={styles.loginTip}>
+          <Text className={styles.tipText}>加载中...</Text>
+        </View>
+      </View>
+    )
+  }
+
+  // 未登录状态
+  if (!isLoggedIn || !userInfo) {
     return (
       <View className={styles.container}>
         <View className={styles.loginTip}>
@@ -61,6 +85,15 @@ export default function Profile() {
         </View>
       </View>
     )
+  }
+
+  // 获取统计数据，使用userStats或默认值
+  const stats = userStats || {
+    followingCount: 0,
+    followerCount: 0,
+    likeCount: 0,
+    worksCount: 0,
+    likesCount: 0
   }
 
   return (
@@ -93,19 +126,19 @@ export default function Profile() {
         <View className={styles.statsSection}>
           <View className={styles.statItem}>
             <Text className={styles.statValue}>
-              {formatNumber(userInfo.stats.followingCount)}
+              {formatNumber(stats.followingCount)}
             </Text>
             <Text className={styles.statLabel}>关注</Text>
           </View>
           <View className={styles.statItem}>
             <Text className={styles.statValue}>
-              {formatNumber(userInfo.stats.followerCount)}
+              {formatNumber(stats.followerCount)}
             </Text>
             <Text className={styles.statLabel}>粉丝</Text>
           </View>
           <View className={styles.statItem}>
             <Text className={styles.statValue}>
-              {formatNumber(userInfo.stats.likeCount)}
+              {formatNumber(stats.likeCount)}
             </Text>
             <Text className={styles.statLabel}>获赞</Text>
           </View>
@@ -116,8 +149,8 @@ export default function Profile() {
           <View className={styles.editBtn}>
             <Text className={styles.editBtnText}>编辑资料</Text>
           </View>
-          <View className={styles.publishBtn} onClick={() => navigateTo(Routes.PUBLISH_CHOOSE)}>
-            <Text className={styles.publishBtnText}>发布视频</Text>
+          <View className={styles.publishBtn} onClick={handleLogout}>
+            <Text className={styles.publishBtnText}>退出登录</Text>
           </View>
         </View>
 
@@ -127,13 +160,13 @@ export default function Profile() {
             className={`${styles.tabItem} ${activeTab === 'works' ? styles.active : ''}`}
             onClick={() => setActiveTab('works')}
           >
-            <Text className={styles.tabText}>作品 {userInfo.stats.worksCount}</Text>
+            <Text className={styles.tabText}>作品 {stats.worksCount}</Text>
           </View>
           <View
             className={`${styles.tabItem} ${activeTab === 'likes' ? styles.active : ''}`}
             onClick={() => setActiveTab('likes')}
           >
-            <Text className={styles.tabText}>喜欢 {userInfo.stats.likesCount}</Text>
+            <Text className={styles.tabText}>喜欢 {stats.likesCount}</Text>
           </View>
         </View>
 

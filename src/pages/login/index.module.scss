@@ -1,0 +1,309 @@
+/**
+ * 登录页面样式
+ *
+ * 采用抖音风格的深色主题设计
+ * 支持手机号验证码登录和密码登录两种方式
+ */
+
+.container {
+  min-height: 100vh;
+  background: #000;
+  padding: 40px 32px;
+  box-sizing: border-box;
+}
+
+// ==================== 头部 Logo ====================
+
+.header {
+  text-align: center;
+  padding: 60px 0 40px;
+}
+
+.logo {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 16px;
+  // CSS Logo 替代图片
+  background: linear-gradient(135deg, #fe2c55, #25f4ee);
+  border-radius: 16px;
+  display: inline-block;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+// ==================== 登录方式切换 ====================
+
+.loginTabs {
+  display: flex;
+  margin-bottom: 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tabActive {
+  color: #fff;
+  font-weight: 500;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 2px;
+    background: #fe2c55;
+    border-radius: 1px;
+  }
+}
+
+// ==================== 表单 ====================
+
+.form {
+  margin-bottom: 24px;
+}
+
+.inputGroup {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 8px;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0 16px;
+  height: 48px;
+}
+
+.input {
+  flex: 1;
+  height: 100%;
+  font-size: 16px;
+  color: #fff;
+  background: transparent;
+}
+
+// 验证码输入框
+.codeInput {
+  flex: 1;
+}
+
+.codeBtn {
+  font-size: 14px;
+  color: #fe2c55;
+  white-space: nowrap;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.codeBtnDisabled {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+// 密码显示切换
+.passwordToggle {
+  padding: 8px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+// ==================== 登录按钮 ====================
+
+.loginBtn {
+  width: 100%;
+  height: 48px;
+  background: #fe2c55;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 16px;
+  transition: opacity 0.3s;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.loginBtnDisabled {
+  background: rgba(254, 44, 85, 0.5);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+// 微信登录按钮
+.wechatBtn {
+  width: 100%;
+  height: 48px;
+  background: #07c160;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  margin-bottom: 24px;
+
+  &:active {
+    opacity: 0.8;
+  }
+}
+
+.wechatIcon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  // CSS 微信图标
+  background: #fff;
+  border-radius: 50%;
+}
+
+// ==================== 其他选项 ====================
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+
+.option {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+// 分割线
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+}
+
+.dividerLine {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.dividerText {
+  padding: 0 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+// ==================== 测试账号提示 ====================
+
+.testAccount {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.testTitle {
+  font-size: 14px;
+  color: #fe2c55;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.testItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.testInfo {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.testPhone {
+  color: #fff;
+  margin-left: 8px;
+}
+
+.testFill {
+  font-size: 12px;
+  color: #25f4ee;
+  padding: 4px 8px;
+}
+
+// ==================== 用户协议 ====================
+
+.agreement {
+  position: fixed;
+  bottom: 40px;
+  left: 32px;
+  right: 32px;
+  text-align: center;
+}
+
+.agreementText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  line-height: 1.6;
+}
+
+.agreementLink {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+// ==================== 加载状态 ====================
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -2,7 +2,8 @@ export default defineAppConfig({
   pages: [
     'pages/index/index',
     'pages/friends/index',
-    'pages/profile/index'
+    'pages/profile/index',
+    'pages/login/index'
   ],
   subpackages: [
     {
