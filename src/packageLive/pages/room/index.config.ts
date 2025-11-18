@@ -1,3 +1,8 @@
 export default definePageConfig({
-  navigationBarTitleText: '直播间'
+  navigationBarTitleText: '',
+  navigationStyle: 'custom',
+  navigationBarBackgroundColor: '#000000',
+  navigationBarTextStyle: 'white',
+  backgroundColor: '#000000',
+  disableScroll: true,
 })

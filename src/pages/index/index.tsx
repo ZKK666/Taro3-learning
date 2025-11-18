@@ -57,6 +57,11 @@ export default function Index() {
     navigateTo(Routes.SEARCH)
   }
 
+  // 跳转直播
+  const handleLive = () => {
+    navigateTo(Routes.LIVE_LIST)
+  }
+
   if (loading) {
     return (
       <View className={styles.loading}>
@@ -69,6 +74,12 @@ export default function Index() {
     <View className={styles.container}>
       {/* 顶部导航 */}
       <View className={styles.header}>
+        {/* 直播入口 */}
+        <View className={styles.liveBtn} onClick={handleLive}>
+          <View className={styles.liveIcon} />
+          <Text className={styles.liveBtnText}>直播</Text>
+        </View>
+
         <View className={styles.tabs}>
           <Text
             className={`${styles.tab} ${currentTab === 'recommend' ? styles.active : ''}`}

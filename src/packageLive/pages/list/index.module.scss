@@ -1,0 +1,195 @@
+/**
+ * 直播列表样式
+ */
+
+.container {
+  min-height: 100vh;
+  background: #000;
+}
+
+// 顶部分类
+.categories {
+  display: flex;
+  padding: 20px;
+  gap: 24px;
+  overflow-x: auto;
+  background: #000;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.categoryItem {
+  flex-shrink: 0;
+  padding: 12px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
+
+  &.active {
+    background: #fe2c55;
+    color: #fff;
+  }
+}
+
+// 直播列表
+.roomList {
+  height: calc(100vh - 120px);
+  padding: 0 16px;
+}
+
+.roomGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+// 直播卡片
+.roomCard {
+  width: calc(50% - 8px);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+}
+
+.coverWrapper {
+  position: relative;
+  width: 100%;
+  padding-top: 130%;
+}
+
+.cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+// 直播标识
+.liveBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background: rgba(254, 44, 85, 0.9);
+  border-radius: 12px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.liveIcon {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+// 观看人数
+.viewerCount {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  font-size: 20px;
+  color: #fff;
+}
+
+.viewerIcon {
+  width: 16px;
+  height: 12px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: #fff;
+    border-radius: 50%;
+  }
+}
+
+// 分类标签
+.categoryTag {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 8px;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+// 房间信息
+.roomInfo {
+  padding: 12px;
+}
+
+.roomTitle {
+  display: block;
+  font-size: 26px;
+  color: #fff;
+  margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.anchorInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.anchorAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}
+
+.anchorName {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 加载状态
+.loading {
+  padding: 40px;
+  text-align: center;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.5);
+}

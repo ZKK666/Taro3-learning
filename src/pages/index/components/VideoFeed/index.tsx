@@ -1,14 +1,20 @@
 /**
  * 视频流组件 - 上下滑动切换视频
  * 性能优化版本
+ *
+ * 【弹幕功能】
+ * - 支持开关弹幕显示
+ * - 为每个视频生成模拟弹幕
+ * - 与视频播放同步
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react'
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { View, Swiper, SwiperItem, Video, Image, Text } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import { useVideoStore, useAppStore } from '@/stores'
 import { formatNumber } from '@/utils/format'
 import CommentSheet from '@/components/CommentSheet'
+import { Danmaku, generateMockDanmaku } from '@/components/Danmaku'
 import type { VideoInfo } from '@/types/video'
 import styles from './index.module.scss'
 
@@ -37,8 +43,26 @@ export default function VideoFeed() {
   // 视频上下文
   const videoContextRef = useRef<Taro.VideoContext | null>(null)
 
+  // ==================== 弹幕相关状态 ====================
+  // 弹幕开关
+  const [danmakuVisible, setDanmakuVisible] = useState(true)
+  // 当前视频播放时间
+  const [currentVideoTime, setCurrentVideoTime] = useState(0)
+  // 视频时长缓存
+  const videoDurationRef = useRef<Record<string, number>>({})
+
   // 当前视频列表
   const videoList = currentTab === 'recommend' ? recommendList : followingList
+
+  // 为每个视频生成弹幕数据（缓存）
+  const danmakuDataMap = useMemo(() => {
+    const map: Record<string, ReturnType<typeof generateMockDanmaku>> = {}
+    videoList.forEach(video => {
+      // 假设视频时长30秒，生成50条弹幕
+      map[video.id] = generateMockDanmaku(50, 30)
+    })
+    return map
+  }, [videoList])
 
   // 当前视频
   const currentVideo = videoList[currentIndex]
@@ -150,6 +174,16 @@ export default function VideoFeed() {
     }
   }
 
+  // 视频时间更新处理
+  const handleTimeUpdate = useCallback((e: any) => {
+    setCurrentVideoTime(e.detail.currentTime)
+  }, [])
+
+  // 切换弹幕显示
+  const toggleDanmaku = useCallback(() => {
+    setDanmakuVisible(prev => !prev)
+  }, [])
+
   if (videoList.length === 0) {
     return (
       <View className={styles.empty}>
@@ -240,12 +274,29 @@ export default function VideoFeed() {
                     controls={false}
                     objectFit="cover"
                     onClick={() => handleVideoTap(video)}
+                    onTimeUpdate={video.id === playingId ? handleTimeUpdate : undefined}
                     onEnded={() => {
                       const ctx = Taro.createVideoContext(`video-${video.id}`)
                       ctx?.seek(0)
                       ctx?.play()
                     }}
                   />
+
+                  {/* 弹幕层 */}
+                  {video.type !== 'slideshow' && index === currentIndex && (
+                    <Danmaku
+                      data={danmakuDataMap[video.id] || []}
+                      currentTime={currentVideoTime}
+                      playing={playingId === video.id}
+                      visible={danmakuVisible}
+                      width={systemInfo.windowWidth}
+                      height={systemInfo.windowHeight - 200}
+                      opacity={0.8}
+                      speed={1}
+                      density={0.8}
+                      fontSize={24}
+                    />
+                  )}
 
                   {/* 暂停图标 */}
                   {playingId !== video.id && index === currentIndex && (
@@ -313,6 +364,19 @@ export default function VideoFeed() {
                     {formatNumber(video.shareCount)}
                   </Text>
                 </View>
+
+                {/* 弹幕开关 - 仅视频类型显示 */}
+                {video.type !== 'slideshow' && (
+                  <View
+                    className={styles.actionItem}
+                    onClick={toggleDanmaku}
+                  >
+                    <View className={`${styles.danmakuIcon} ${danmakuVisible ? styles.active : ''}`} />
+                    <Text className={styles.actionCount}>
+                      {danmakuVisible ? '弹' : '关'}
+                    </Text>
+                  </View>
+                )}
 
                 {/* 音乐唱片 */}
                 <View className={styles.musicDisk}>

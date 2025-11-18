@@ -61,6 +61,57 @@
   }
 }
 
+// 直播入口
+.liveBtn {
+  position: absolute;
+  left: 30px;
+  top: 100px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: rgba(254, 44, 85, 0.8);
+  border-radius: 20px;
+}
+
+.liveIcon {
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    background: #fe2c55;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.7;
+  }
+}
+
+.liveBtnText {
+  font-size: 24px;
+  color: #fff;
+  font-weight: 500;
+}
+
 .search {
   position: absolute;
   right: 30px;

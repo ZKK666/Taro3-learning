@@ -1,0 +1,398 @@
+/**
+ * 直播间样式
+ */
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #000;
+  overflow: hidden;
+}
+
+// 视频区域
+.videoArea {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.videoBg {
+  width: 100%;
+  height: 100%;
+}
+
+// 顶部信息栏
+.topBar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 60px 20px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+}
+
+.anchorInfo {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 30px;
+  padding: 8px;
+  padding-right: 16px;
+}
+
+.anchorAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin-right: 12px;
+}
+
+.anchorMeta {
+  display: flex;
+  flex-direction: column;
+  margin-right: 16px;
+}
+
+.anchorName {
+  font-size: 26px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.viewerCount {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+
+.followBtn {
+  padding: 8px 20px;
+  background: #fe2c55;
+  border-radius: 16px;
+  font-size: 22px;
+  color: #fff;
+}
+
+.closeBtn {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeIcon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 3px;
+    background: #fff;
+    border-radius: 2px;
+  }
+
+  &::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+}
+
+// 消息列表
+.messageList {
+  position: absolute;
+  left: 20px;
+  bottom: 160px;
+  width: 60%;
+  max-height: 300px;
+}
+
+.messageItem {
+  margin-bottom: 12px;
+}
+
+.chatMessage,
+.giftMessage {
+  display: inline-flex;
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.giftMessage {
+  background: rgba(254, 44, 85, 0.3);
+}
+
+.userName {
+  font-size: 24px;
+  color: #25f4ee;
+  margin-right: 8px;
+}
+
+.messageText {
+  font-size: 24px;
+  color: #fff;
+}
+
+.giftText {
+  font-size: 24px;
+  color: #ffcc00;
+}
+
+// 点赞动画
+.likeAnimations {
+  position: absolute;
+  right: 30px;
+  bottom: 200px;
+  width: 60px;
+}
+
+.likeHeart {
+  position: absolute;
+  bottom: 0;
+  font-size: 40px;
+  animation: floatUp 1s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-200px) scale(1.5);
+  }
+}
+
+// 底部操作栏
+.bottomBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  padding-bottom: 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
+}
+
+.inputWrapper {
+  flex: 1;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 36px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  height: 100%;
+  font-size: 26px;
+  color: #fff;
+}
+
+.iconBtn {
+  width: 72px;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.active {
+    background: rgba(37, 244, 238, 0.3);
+  }
+}
+
+// 弹幕图标
+.danmakuIcon {
+  width: 36px;
+  height: 28px;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 16px;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 5px;
+    left: 8px;
+    width: 12px;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+  }
+}
+
+// 礼物图标
+.giftIcon {
+  width: 36px;
+  height: 36px;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 6px;
+    width: 24px;
+    height: 20px;
+    background: #ffcc00;
+    border-radius: 4px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 8px;
+    height: 12px;
+    background: #fe2c55;
+    border-radius: 50% 50% 0 0;
+  }
+}
+
+// 点赞按钮
+.likeBtn {
+  width: 72px;
+  height: 72px;
+  background: #fe2c55;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.heartIcon {
+  width: 32px;
+  height: 28px;
+  position: relative;
+
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    width: 16px;
+    height: 24px;
+    border-radius: 16px 16px 0 0;
+    background: #fff;
+  }
+
+  &::before {
+    left: 15px;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+  }
+
+  &::after {
+    left: 0;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+  }
+}
+
+// 礼物面板
+.giftPanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+.giftPanelMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.giftPanelContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  border-radius: 24px 24px 0 0;
+  padding-bottom: 40px;
+}
+
+.giftPanelHeader {
+  padding: 24px;
+  text-align: center;
+  font-size: 30px;
+  color: #fff;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.giftList {
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20px;
+}
+
+.giftItem {
+  width: 25%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.giftEmoji {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.giftName {
+  font-size: 24px;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.giftPrice {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.5);
+}
