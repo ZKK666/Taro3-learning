@@ -157,11 +157,13 @@ const config = {
     /**
      * 【学习要点】WXML 压缩
      *
-     * 移除 WXML 中的空白字符，减小文件体积
+     * 注意：minifyXML 在某些 Taro 版本中可能导致 input 标签闭合问题
+     * 如果遇到 "expect end-tag `input`" 错误，请禁用此选项
+     *
+     * minifyXML: {
+     *   collapseWhitespace: true
+     * }
      */
-    minifyXML: {
-      collapseWhitespace: true
-    }
   },
   h5: {
     publicPath: '/',
