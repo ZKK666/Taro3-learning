@@ -32,7 +32,10 @@
     "build:quickapp": "taro build --type quickapp",
     "dev:quickapp": "npm run build:quickapp -- --watch",
     "lint": "eslint src --ext .ts,.tsx",
-    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+    "lint:fix": "eslint src --ext .ts,.tsx --fix",
+    "analyze": "node scripts/analyze-size.js",
+    "analyze:bundle": "ANALYZE=true npm run build:weapp",
+    "build:prod": "NODE_ENV=production npm run build:weapp"
   },
   "browserslist": [
     "last 3 versions",
