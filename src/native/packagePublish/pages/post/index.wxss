@@ -1,0 +1,242 @@
+/* 发布页面样式 */
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #161823;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 视频预览区域 */
+.video-section {
+  width: 100%;
+  padding: 20rpx;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.video-preview {
+  width: 100%;
+  height: 400rpx;
+  border-radius: 16rpx;
+  background-color: #000;
+}
+
+.change-cover {
+  position: absolute;
+  right: 40rpx;
+  bottom: 40rpx;
+  padding: 12rpx 24rpx;
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 8rpx;
+}
+
+.change-cover text {
+  font-size: 24rpx;
+  color: #fff;
+}
+
+/* 表单区域 */
+.form-section {
+  flex: 1;
+  padding: 0 30rpx;
+}
+
+.form-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.item-icon {
+  font-size: 36rpx;
+}
+
+.item-label {
+  font-size: 30rpx;
+  color: #fff;
+}
+
+.item-right {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.arrow {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* 标题输入 */
+.title-input {
+  width: 100%;
+  min-height: 120rpx;
+  font-size: 32rpx;
+  color: #fff;
+  background: transparent;
+}
+
+.placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.char-count {
+  position: absolute;
+  right: 0;
+  bottom: 30rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* 话题标签 */
+.selected-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  max-width: 400rpx;
+}
+
+.topic-tag {
+  font-size: 26rpx;
+  color: #fe2c55;
+}
+
+/* 位置 */
+.location-name {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.6);
+  max-width: 300rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 可见范围 */
+.visibility-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 底部按钮 */
+.footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 20rpx 30rpx;
+  background-color: #161823;
+  border-top: 1rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.draft-btn,
+.publish-btn {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8rpx;
+  border: none;
+  font-size: 32rpx;
+}
+
+.draft-btn {
+  background-color: #2f2f2f;
+  color: #fff;
+}
+
+.publish-btn {
+  background-color: #fe2c55;
+  color: #fff;
+  font-weight: 500;
+}
+
+.publish-btn.disabled {
+  opacity: 0.6;
+}
+
+/* 安全区域 */
+.safe-area-bottom {
+  padding-bottom: calc(20rpx + constant(safe-area-inset-bottom));
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom));
+}
+
+/* 可见范围选择器 */
+.visibility-picker {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.visibility-picker.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.picker-content {
+  width: 100%;
+  background-color: #222;
+  border-radius: 24rpx 24rpx 0 0;
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.picker-header {
+  padding: 30rpx;
+  text-align: center;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.1);
+}
+
+.picker-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #fff;
+}
+
+.picker-options {
+  padding: 20rpx 0;
+}
+
+.picker-option {
+  display: flex;
+  align-items: center;
+  padding: 30rpx;
+  position: relative;
+}
+
+.picker-option.selected {
+  background-color: rgba(254, 44, 85, 0.1);
+}
+
+.option-label {
+  font-size: 30rpx;
+  color: #fff;
+  margin-right: 20rpx;
+}
+
+.option-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.check {
+  position: absolute;
+  right: 30rpx;
+  font-size: 32rpx;
+  color: #fe2c55;
+}

@@ -1,0 +1,66 @@
+<!--
+  登录页面 - 原生小程序实现
+-->
+<view class="container">
+  <!-- Logo -->
+  <view class="logo-section">
+    <image class="logo" src="/assets/images/logo.png" mode="aspectFit"></image>
+    <text class="app-name">抖音</text>
+    <text class="slogan">记录美好生活</text>
+  </view>
+
+  <!-- 登录方式 -->
+  <view class="login-section">
+    <!-- 微信一键登录 -->
+    <button
+      class="login-btn wechat-btn"
+      open-type="getUserInfo"
+      bindgetuserinfo="handleWechatLogin"
+    >
+      <text class="btn-icon">📱</text>
+      <text class="btn-text">微信一键登录</text>
+    </button>
+
+    <!-- 手机号登录 -->
+    <button
+      class="login-btn phone-btn"
+      bindtap="handlePhoneLogin"
+    >
+      <text class="btn-icon">📞</text>
+      <text class="btn-text">手机号登录</text>
+    </button>
+
+    <!-- 其他登录方式 -->
+    <view class="other-login">
+      <text class="other-text">其他登录方式</text>
+      <view class="other-icons">
+        <view class="other-icon" bindtap="handleQQLogin">
+          <text>Q</text>
+        </view>
+        <view class="other-icon" bindtap="handleWeiboLogin">
+          <text>微</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 协议 -->
+  <view class="agreement-section">
+    <view class="checkbox-wrapper" bindtap="toggleAgreement">
+      <view class="checkbox {{agreed ? 'checked' : ''}}">
+        <text wx:if="{{agreed}}">✓</text>
+      </view>
+      <text class="agreement-text">
+        我已阅读并同意
+        <text class="link" bindtap="showUserAgreement">用户协议</text>
+        和
+        <text class="link" bindtap="showPrivacyPolicy">隐私政策</text>
+      </text>
+    </view>
+  </view>
+
+  <!-- 游客模式 -->
+  <view class="guest-section">
+    <text class="guest-text" bindtap="handleGuestMode">暂不登录，先逛逛</text>
+  </view>
+</view>

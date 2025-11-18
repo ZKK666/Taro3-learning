@@ -1,0 +1,146 @@
+<!--
+  视频发布页面 - 原生小程序实现
+-->
+<view class="container">
+  <!-- 视频预览 -->
+  <view class="video-section">
+    <video
+      class="video-preview"
+      src="{{videoPath}}"
+      poster="{{coverPath}}"
+      controls
+      show-center-play-btn
+      object-fit="contain"
+    ></video>
+    <view class="change-cover" bindtap="handleChangeCover">
+      <text>更换封面</text>
+    </view>
+  </view>
+
+  <!-- 表单区域 -->
+  <scroll-view scroll-y class="form-section">
+    <!-- 标题输入 -->
+    <view class="form-item">
+      <textarea
+        class="title-input"
+        placeholder="添加作品描述..."
+        placeholder-class="placeholder"
+        maxlength="500"
+        value="{{title}}"
+        bindinput="handleTitleInput"
+        auto-height
+      ></textarea>
+      <text class="char-count">{{title.length}}/500</text>
+    </view>
+
+    <!-- 话题选择 -->
+    <view class="form-item" bindtap="handleSelectTopic">
+      <view class="item-left">
+        <text class="item-icon">#</text>
+        <text class="item-label">添加话题</text>
+      </view>
+      <view class="item-right">
+        <view class="selected-topics">
+          <text wx:for="{{selectedTopics}}" wx:key="id" class="topic-tag">
+            #{{item.name}}
+          </text>
+        </view>
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- @好友 -->
+    <view class="form-item" bindtap="handleAtFriends">
+      <view class="item-left">
+        <text class="item-icon">@</text>
+        <text class="item-label">@好友</text>
+      </view>
+      <view class="item-right">
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- 位置 -->
+    <view class="form-item" bindtap="handleSelectLocation">
+      <view class="item-left">
+        <text class="item-icon">📍</text>
+        <text class="item-label">添加位置</text>
+      </view>
+      <view class="item-right">
+        <text class="location-name" wx:if="{{location}}">{{location.name}}</text>
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- 可见范围 -->
+    <view class="form-item" bindtap="handleSelectVisibility">
+      <view class="item-left">
+        <text class="item-icon">👁</text>
+        <text class="item-label">谁可以看</text>
+      </view>
+      <view class="item-right">
+        <text class="visibility-text">{{visibilityText}}</text>
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <!-- 高级设置 -->
+    <view class="form-item" bindtap="handleAdvancedSettings">
+      <view class="item-left">
+        <text class="item-icon">⚙️</text>
+        <text class="item-label">高级设置</text>
+      </view>
+      <view class="item-right">
+        <text class="arrow">></text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 底部按钮 -->
+  <view class="footer safe-area-bottom">
+    <button class="draft-btn" bindtap="handleSaveDraft">
+      <text>存草稿</text>
+    </button>
+    <button class="publish-btn {{publishing ? 'disabled' : ''}}" bindtap="handlePublish">
+      <text>{{publishing ? '发布中...' : '发布'}}</text>
+    </button>
+  </view>
+</view>
+
+<!-- 可见范围选择器 -->
+<view class="visibility-picker {{showVisibilityPicker ? 'show' : ''}}" catchtap="hideVisibilityPicker">
+  <view class="picker-content" catchtap="stopPropagation">
+    <view class="picker-header">
+      <text class="picker-title">谁可以看</text>
+    </view>
+    <view class="picker-options">
+      <view
+        class="picker-option {{visibility === 'public' ? 'selected' : ''}}"
+        bindtap="selectVisibility"
+        data-value="public"
+      >
+        <text class="option-label">公开</text>
+        <text class="option-desc">所有人可见</text>
+        <text class="check" wx:if="{{visibility === 'public'}}">✓</text>
+      </view>
+      <view
+        class="picker-option {{visibility === 'friends' ? 'selected' : ''}}"
+        bindtap="selectVisibility"
+        data-value="friends"
+      >
+        <text class="option-label">朋友可见</text>
+        <text class="option-desc">互相关注的好友可见</text>
+        <text class="check" wx:if="{{visibility === 'friends'}}">✓</text>
+      </view>
+      <view
+        class="picker-option {{visibility === 'private' ? 'selected' : ''}}"
+        bindtap="selectVisibility"
+        data-value="private"
+      >
+        <text class="option-label">私密</text>
+        <text class="option-desc">仅自己可见</text>
+        <text class="check" wx:if="{{visibility === 'private'}}">✓</text>
+      </view>
+    </view>
+  </view>
+</view>

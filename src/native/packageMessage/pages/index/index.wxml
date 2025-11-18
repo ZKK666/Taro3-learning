@@ -1,0 +1,101 @@
+<!--
+  消息中心页面 - 原生小程序实现
+-->
+<view class="container">
+  <!-- 消息类型入口 -->
+  <view class="message-types">
+    <!-- 点赞 -->
+    <view class="type-item" bindtap="goToLikes">
+      <view class="type-icon-wrapper">
+        <text class="type-icon">❤️</text>
+        <view class="badge" wx:if="{{unreadCount.like > 0}}">
+          <text>{{unreadCount.like > 99 ? '99+' : unreadCount.like}}</text>
+        </view>
+      </view>
+      <text class="type-name">赞</text>
+      <text class="type-preview" wx:if="{{previews.like}}">
+        {{previews.like.user.nickname}}赞了你
+      </text>
+    </view>
+
+    <!-- 评论 -->
+    <view class="type-item" bindtap="goToComments">
+      <view class="type-icon-wrapper">
+        <text class="type-icon">💬</text>
+        <view class="badge" wx:if="{{unreadCount.comment > 0}}">
+          <text>{{unreadCount.comment > 99 ? '99+' : unreadCount.comment}}</text>
+        </view>
+      </view>
+      <text class="type-name">评论</text>
+      <text class="type-preview" wx:if="{{previews.comment}}">
+        {{previews.comment.user.nickname}}：{{previews.comment.content}}
+      </text>
+    </view>
+
+    <!-- 新粉丝 -->
+    <view class="type-item" bindtap="goToFollowers">
+      <view class="type-icon-wrapper">
+        <text class="type-icon">👤</text>
+        <view class="badge" wx:if="{{unreadCount.follow > 0}}">
+          <text>{{unreadCount.follow > 99 ? '99+' : unreadCount.follow}}</text>
+        </view>
+      </view>
+      <text class="type-name">新粉丝</text>
+      <text class="type-preview" wx:if="{{previews.follow}}">
+        {{previews.follow.user.nickname}}关注了你
+      </text>
+    </view>
+
+    <!-- 系统通知 -->
+    <view class="type-item" bindtap="goToSystem">
+      <view class="type-icon-wrapper">
+        <text class="type-icon">📢</text>
+        <view class="badge" wx:if="{{unreadCount.system > 0}}">
+          <text>{{unreadCount.system > 99 ? '99+' : unreadCount.system}}</text>
+        </view>
+      </view>
+      <text class="type-name">通知</text>
+      <text class="type-preview" wx:if="{{previews.system}}">
+        {{previews.system.title}}
+      </text>
+    </view>
+  </view>
+
+  <!-- 最近消息列表 -->
+  <view class="recent-section">
+    <view class="section-header">
+      <text class="section-title">最近消息</text>
+    </view>
+
+    <view class="message-list" wx:if="{{recentMessages.length > 0}}">
+      <view
+        class="message-item"
+        wx:for="{{recentMessages}}"
+        wx:key="id"
+        bindtap="goToMessageDetail"
+        data-message="{{item}}"
+      >
+        <image class="message-avatar" src="{{item.user.avatarUrl}}" mode="aspectFill"></image>
+        <view class="message-content">
+          <view class="message-header">
+            <text class="message-name">{{item.user.nickname}}</text>
+            <text class="message-time">{{item.timeText}}</text>
+          </view>
+          <text class="message-text">{{item.previewText}}</text>
+        </view>
+        <image
+          wx:if="{{item.video}}"
+          class="message-cover"
+          src="{{item.video.coverUrl}}"
+          mode="aspectFill"
+        ></image>
+        <view class="unread-dot" wx:if="{{!item.isRead}}"></view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty" wx:else>
+      <text class="empty-text">暂无消息</text>
+    </view>
+  </view>
+</view>
