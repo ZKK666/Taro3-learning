@@ -1,6 +1,7 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index',
+    'pages/friends/index',
     'pages/profile/index'
   ],
   subpackages: [
@@ -11,7 +12,8 @@ export default defineAppConfig({
         'pages/feed/index',
         'pages/detail/index',
         'pages/comment/index',
-        'pages/user/index'
+        'pages/user/index',
+        'pages/music/index'
       ]
     },
     {
@@ -22,12 +24,59 @@ export default defineAppConfig({
         'pages/result/index',
         'pages/topic/index'
       ]
+    },
+    {
+      root: 'packageLive',
+      name: 'live',
+      pages: [
+        'pages/list/index',
+        'pages/room/index'
+      ]
+    },
+    {
+      root: 'packageCreator',
+      name: 'creator',
+      pages: [
+        'pages/index/index',
+        'pages/works/index',
+        'pages/fans/index',
+        'pages/inspiration/index'
+      ]
+    },
+    {
+      root: 'packageSettings',
+      name: 'settings',
+      pages: [
+        'pages/index/index',
+        'pages/account/index',
+        'pages/privacy/index',
+        'pages/notification/index',
+        'pages/general/index',
+        'pages/about/index',
+        'pages/edit-profile/index'
+      ]
+    },
+    {
+      root: 'packageChat',
+      name: 'chat',
+      pages: [
+        'pages/list/index',
+        'pages/conversation/index'
+      ]
     }
   ],
   preloadRule: {
     'pages/index/index': {
       network: 'all',
       packages: ['video']
+    },
+    'pages/profile/index': {
+      network: 'wifi',
+      packages: ['settings', 'creator']
+    },
+    'pages/friends/index': {
+      network: 'wifi',
+      packages: ['chat']
     }
   },
   window: {
@@ -38,6 +87,7 @@ export default defineAppConfig({
     backgroundColor: '#000000'
   },
   tabBar: {
+    custom: false,
     color: '#999999',
     selectedColor: '#ffffff',
     backgroundColor: '#000000',
@@ -48,6 +98,12 @@ export default defineAppConfig({
         text: '首页',
         iconPath: 'assets/tabbar/home.png',
         selectedIconPath: 'assets/tabbar/home-active.png'
+      },
+      {
+        pagePath: 'pages/friends/index',
+        text: '朋友',
+        iconPath: 'assets/tabbar/friends.png',
+        selectedIconPath: 'assets/tabbar/friends-active.png'
       },
       {
         pagePath: 'pages/profile/index',

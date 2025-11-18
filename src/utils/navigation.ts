@@ -55,6 +55,7 @@ export function reLaunch(url: string): Promise<TaroGeneral.CallbackResult> {
 export const Routes = {
   // 主包
   INDEX: '/pages/index/index',
+  FRIENDS: '/pages/friends/index',
   PROFILE: '/pages/profile/index',
   LOGIN: '/pages/login/index',
 
@@ -63,11 +64,35 @@ export const Routes = {
   VIDEO_DETAIL: '/packageVideo/pages/detail/index',
   COMMENT: '/packageVideo/pages/comment/index',
   USER: '/packageVideo/pages/user/index',
+  MUSIC: '/packageVideo/pages/music/index',
 
   // 搜索分包
   SEARCH: '/packageSearch/pages/index/index',
   SEARCH_RESULT: '/packageSearch/pages/result/index',
   TOPIC: '/packageSearch/pages/topic/index',
+
+  // 直播分包
+  LIVE_LIST: '/packageLive/pages/list/index',
+  LIVE_ROOM: '/packageLive/pages/room/index',
+
+  // 创作者中心分包
+  CREATOR_CENTER: '/packageCreator/pages/index/index',
+  CREATOR_WORKS: '/packageCreator/pages/works/index',
+  CREATOR_FANS: '/packageCreator/pages/fans/index',
+  CREATOR_INSPIRATION: '/packageCreator/pages/inspiration/index',
+
+  // 设置分包
+  SETTINGS: '/packageSettings/pages/index/index',
+  SETTINGS_ACCOUNT: '/packageSettings/pages/account/index',
+  SETTINGS_PRIVACY: '/packageSettings/pages/privacy/index',
+  SETTINGS_NOTIFICATION: '/packageSettings/pages/notification/index',
+  SETTINGS_GENERAL: '/packageSettings/pages/general/index',
+  SETTINGS_ABOUT: '/packageSettings/pages/about/index',
+  EDIT_PROFILE: '/packageSettings/pages/edit-profile/index',
+
+  // 私信分包
+  CHAT_LIST: '/packageChat/pages/list/index',
+  CHAT_CONVERSATION: '/packageChat/pages/conversation/index',
 
   // 发布分包（原生）
   PUBLISH_CHOOSE: '/packagePublish/pages/choose/index',

@@ -1,0 +1,205 @@
+.container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #161823;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 30px 20px;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.headerActions {
+  display: flex;
+  gap: 30px;
+}
+
+.actionIcon {
+  font-size: 44px;
+}
+
+.content {
+  height: calc(100vh - 120px);
+}
+
+// 日常故事
+.storiesSection {
+  display: flex;
+  padding: 20px 30px;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.storyItem {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 30px;
+}
+
+.avatarWrapper {
+  position: relative;
+  padding: 4px;
+  border-radius: 50%;
+  background: #333;
+
+  &.hasNew {
+    background: linear-gradient(135deg, #fe2c55, #25f4ee);
+  }
+}
+
+.storyAvatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #161823;
+}
+
+.addBtn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  background-color: #25f4ee;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #161823;
+
+  text {
+    color: #000;
+    font-size: 24px;
+    font-weight: bold;
+  }
+}
+
+.storyName {
+  margin-top: 12px;
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.8);
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 动态列表
+.momentsSection {
+  padding: 20px 30px;
+}
+
+.momentItem {
+  padding: 30px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.momentHeader {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.momentAvatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 20px;
+}
+
+.momentUserInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.momentNickname {
+  font-size: 28px;
+  font-weight: 500;
+  color: #fff;
+}
+
+.momentTime {
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.momentContent {
+  font-size: 28px;
+  color: #fff;
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+// 视频封面
+.videoCover {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.coverImage {
+  width: 100%;
+  height: 100%;
+}
+
+.playIcon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  text {
+    font-size: 32px;
+    color: #fff;
+    margin-left: 6px;
+  }
+}
+
+// 图片网格
+.imageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.gridImage {
+  width: calc(33.33% - 6px);
+  aspect-ratio: 1;
+  border-radius: 8px;
+}
+
+// 互动栏
+.momentActions {
+  display: flex;
+  gap: 40px;
+}
+
+.actionBtn {
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.6);
+
+  .liked {
+    color: #fe2c55;
+  }
+}
