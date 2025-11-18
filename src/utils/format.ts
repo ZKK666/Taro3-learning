@@ -89,3 +89,8 @@ export function formatDate(time: string | number, format = 'YYYY-MM-DD'): string
     .replace('mm', minutes)
     .replace('ss', seconds)
 }
+
+/**
+ * formatTime 是 formatRelativeTime 的别名
+ */
+export const formatTime = formatRelativeTime
