@@ -323,7 +323,13 @@ export default function VideoFeed() {
 
                   {/* 暂停图标 */}
                   {playingId !== video.id && index === currentIndex && (
-                    <View className={styles.pauseOverlay} onClick={() => togglePlay(video.id)}>
+                    <View
+                      className={styles.pauseOverlay}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        togglePlay(video.id)
+                      }}
+                    >
                       <View className={styles.playIcon} />
                     </View>
                   )}
