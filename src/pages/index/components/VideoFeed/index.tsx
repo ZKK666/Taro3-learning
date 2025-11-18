@@ -307,13 +307,18 @@ export default function VideoFeed() {
                     showProgress={false}
                     controls={false}
                     objectFit="cover"
-                    onClick={() => handleVideoTap(video)}
                     onTimeUpdate={video.id === playingId ? handleTimeUpdate : undefined}
                     onEnded={() => {
                       const ctx = Taro.createVideoContext(`video-${video.id}`)
                       ctx?.seek(0)
                       ctx?.play()
                     }}
+                  />
+
+                  {/* 统一的点击控制层 - 处理所有点击事件 */}
+                  <View
+                    className={styles.videoTapLayer}
+                    onClick={() => handleVideoTap(video)}
                   />
 
                   {/* 弹幕层 */}
@@ -332,15 +337,9 @@ export default function VideoFeed() {
                     />
                   )}
 
-                  {/* 暂停图标 */}
+                  {/* 暂停图标 - 纯展示，不处理点击 */}
                   {playingId !== video.id && index === currentIndex && (
-                    <View
-                      className={styles.pauseOverlay}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        togglePlay(video.id)
-                      }}
-                    >
+                    <View className={styles.pauseOverlay}>
                       <View className={styles.playIcon} />
                     </View>
                   )}
