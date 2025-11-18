@@ -1,0 +1,103 @@
+.container {
+  padding: 20px;
+}
+
+.selectBtn {
+  width: 200px;
+  height: 200px;
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.plusIcon {
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 12px;
+}
+
+.selectText {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.progressSection {
+  padding: 20px;
+}
+
+.progressText {
+  display: block;
+  text-align: center;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.pauseBtn, .resumeBtn, .retryBtn {
+  padding: 8px 24px;
+  border-radius: 20px;
+  font-size: 14px;
+  color: #fff;
+}
+
+.pauseBtn {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.resumeBtn {
+  background: #fe2c55;
+}
+
+.loading, .success, .error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+  color: #fff;
+  font-size: 14px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 12px;
+}
+
+.checkIcon {
+  width: 48px;
+  height: 48px;
+  background: #07c160;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.errorText {
+  color: #fe2c55;
+  margin-bottom: 16px;
+}
+
+.retryBtn {
+  background: #fe2c55;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
