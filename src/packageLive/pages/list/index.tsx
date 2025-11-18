@@ -43,14 +43,15 @@ const generateMockLiveRooms = (): LiveRoomItem[] => {
     '唱歌点歌',
     '日常分享',
   ]
+  const colors = ['fe2c55', '25f4ee', '1a1a2e', '533483', '0f3460', '4a0e4e', 'e94560', '16213e']
 
   return Array.from({ length: 20 }, (_, i) => ({
     id: `live_${i + 1}`,
     title: titles[i % titles.length],
-    coverUrl: `https://picsum.photos/400/500?random=${i + 100}`,
+    coverUrl: `https://placehold.co/400x500/${colors[i % 8]}/fff?text=${encodeURIComponent(categories[i % categories.length])}`,
     anchorId: `anchor_${i + 1}`,
     anchorName: `主播${i + 1}号`,
-    anchorAvatar: `https://picsum.photos/100/100?random=${i + 200}`,
+    anchorAvatar: `https://placehold.co/100x100/${colors[i % 8]}/fff?text=${i + 1}`,
     viewerCount: Math.floor(Math.random() * 50000) + 100,
     category: categories[i % categories.length],
     isLive: true,

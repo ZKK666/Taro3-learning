@@ -58,7 +58,7 @@ export default function LiveRoom() {
     id: roomId,
     title: '直播间',
     anchorName: '主播',
-    anchorAvatar: 'https://picsum.photos/100/100?random=1',
+    anchorAvatar: 'https://placehold.co/100x100/fe2c55/fff?text=Live',
     viewerCount: 0,
     likeCount: 0,
   })
@@ -129,7 +129,7 @@ export default function LiveRoom() {
       id: roomId,
       title: '今晚不下播',
       anchorName: '主播小哥',
-      anchorAvatar: `https://picsum.photos/100/100?random=${roomId}`,
+      anchorAvatar: `https://placehold.co/100x100/333/fff?random=${roomId}`,
       viewerCount: Math.floor(Math.random() * 10000) + 1000,
       likeCount: Math.floor(Math.random() * 100000) + 10000,
     })
@@ -153,7 +153,7 @@ export default function LiveRoom() {
       type: 'chat',
       userId: `user_${Math.floor(Math.random() * 1000)}`,
       userName: `用户${Math.floor(Math.random() * 1000)}`,
-      userAvatar: `https://picsum.photos/50/50?random=${Math.random()}`,
+      userAvatar: `https://placehold.co/50x50/333/fff?random=${Math.random()}`,
       content: mockTexts[Math.floor(Math.random() * mockTexts.length)],
       timestamp: Date.now(),
     }
@@ -182,7 +182,7 @@ export default function LiveRoom() {
       type: 'chat',
       userId: 'self',
       userName: '我',
-      userAvatar: 'https://picsum.photos/50/50?random=self',
+      userAvatar: 'https://placehold.co/50x50/333/fff?random=self',
       content: inputText.trim(),
       timestamp: Date.now(),
     }
@@ -201,7 +201,7 @@ export default function LiveRoom() {
       type: 'gift',
       userId: 'self',
       userName: '我',
-      userAvatar: 'https://picsum.photos/50/50?random=self',
+      userAvatar: 'https://placehold.co/50x50/333/fff?random=self',
       content: `送出 ${gift.name}`,
       giftId: gift.id,
       giftCount: 1,
@@ -249,7 +249,7 @@ export default function LiveRoom() {
       <View className={styles.videoArea}>
         <Image
           className={styles.videoBg}
-          src={`https://picsum.photos/720/1280?random=${roomId}`}
+          src={`https://placehold.co/720x1280/1a1a2e/fff?random=${roomId}`}
           mode="aspectFill"
         />
 

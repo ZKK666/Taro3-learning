@@ -13,17 +13,21 @@ import { formatNumber } from '@/utils/format'
 import { navigateTo, Routes } from '@/utils/navigation'
 import styles from './index.module.scss'
 
+// 占位图颜色方案
+const workColors = ['1a1a2e', '16213e', '0f3460', '533483', 'e94560', '4a0e4e']
+const likeColors = ['2c3e50', '34495e', 'c0392b', '8e44ad', '27ae60', 'f39c12']
+
 // Mock 作品数据
 const mockWorks = Array.from({ length: 18 }, (_, i) => ({
   id: `work_${i + 1}`,
-  coverUrl: `https://picsum.photos/300/400?random=work${i + 1}`,
+  coverUrl: `https://placehold.co/300x400/${workColors[i % 6]}/fff?text=${encodeURIComponent(`作品${i + 1}`)}`,
   playCount: Math.floor(1000 + Math.random() * 99000)
 }))
 
 // Mock 喜欢数据
 const mockLikes = Array.from({ length: 24 }, (_, i) => ({
   id: `like_${i + 1}`,
-  coverUrl: `https://picsum.photos/300/400?random=like${i + 1}`,
+  coverUrl: `https://placehold.co/300x400/${likeColors[i % 6]}/fff?text=${encodeURIComponent(`喜欢${i + 1}`)}`,
   playCount: Math.floor(1000 + Math.random() * 99000)
 }))
 

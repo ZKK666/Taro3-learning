@@ -449,10 +449,10 @@ class LiveService {
     return {
       id: roomId,
       title: '直播测试',
-      coverUrl: 'https://picsum.photos/720/1280?random=live',
+      coverUrl: 'https://placehold.co/720x1280/fe2c55/fff?text=LIVE',
       anchorId: 'anchor_001',
       anchorName: '主播小哥',
-      anchorAvatar: 'https://picsum.photos/100/100?random=anchor',
+      anchorAvatar: 'https://placehold.co/100x100/333/fff?text=A',
       status: 'living',
       viewerCount: Math.floor(1000 + Math.random() * 9000),
       likeCount: Math.floor(10000 + Math.random() * 90000),

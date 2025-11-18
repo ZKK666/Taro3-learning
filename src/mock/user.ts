@@ -31,7 +31,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_001',
     nickname: '小红薯创作者',
-    avatarUrl: 'https://picsum.photos/200/200?random=u1',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u1',
     bio: '分享生活中的美好瞬间',
     gender: 2,
     birthday: '1995-06-15',
@@ -45,7 +45,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_002',
     nickname: '美食达人阿强',
-    avatarUrl: 'https://picsum.photos/200/200?random=u2',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u2',
     bio: '专注美食制作10年',
     gender: 1,
     birthday: '1988-03-22',
@@ -59,7 +59,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_003',
     nickname: '舞蹈小王子',
-    avatarUrl: 'https://picsum.photos/200/200?random=u3',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u3',
     bio: '跳舞使我快乐',
     gender: 1,
     birthday: '1998-09-10',
@@ -73,7 +73,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_004',
     nickname: '旅行家小美',
-    avatarUrl: 'https://picsum.photos/200/200?random=u4',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u4',
     bio: '世界那么大，我想去看看',
     gender: 2,
     birthday: '1992-12-05',
@@ -87,7 +87,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_005',
     nickname: '知识分享官',
-    avatarUrl: 'https://picsum.photos/200/200?random=u5',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u5',
     bio: '每天学习一点新知识',
     gender: 1,
     birthday: '1990-07-18',
@@ -101,7 +101,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_006',
     nickname: '萌宠控',
-    avatarUrl: 'https://picsum.photos/200/200?random=u6',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u6',
     bio: '家有萌宠，欢乐多多',
     gender: 2,
     birthday: '1996-04-28',
@@ -115,7 +115,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_007',
     nickname: '健身教练Leo',
-    avatarUrl: 'https://picsum.photos/200/200?random=u7',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u7',
     bio: '专业健身指导，帮你塑造完美身材',
     gender: 1,
     birthday: '1991-11-30',
@@ -129,7 +129,7 @@ export const mockUsers: UserInfo[] = [
   {
     id: 'user_008',
     nickname: '手工艺人小艾',
-    avatarUrl: 'https://picsum.photos/200/200?random=u8',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=u8',
     bio: '用双手创造美好',
     gender: 2,
     birthday: '1994-08-08',
@@ -153,7 +153,7 @@ export const mockLoginUsers: Record<string, UserInfo & { password: string }> = {
   '13800138000': {
     id: 'user_test_001',
     nickname: '抖音小达人',
-    avatarUrl: 'https://picsum.photos/200/200?random=login1',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=login1',
     bio: '热爱生活，记录美好瞬间',
     gender: 1,
     birthday: '1995-06-15',
@@ -172,7 +172,7 @@ export const mockLoginUsers: Record<string, UserInfo & { password: string }> = {
   '13900139000': {
     id: 'user_test_002',
     nickname: '官方小助手',
-    avatarUrl: 'https://picsum.photos/200/200?random=login2',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=login2',
     bio: '官方认证账号，为您提供最新资讯',
     gender: 2,
     birthday: '1990-03-20',
@@ -191,7 +191,7 @@ export const mockLoginUsers: Record<string, UserInfo & { password: string }> = {
   '13700137000': {
     id: 'user_test_003',
     nickname: '新用户_137',
-    avatarUrl: 'https://picsum.photos/200/200?random=login3',
+    avatarUrl: 'https://placehold.co/200x200/333/fff?random=login3',
     bio: '',
     gender: 0,
     birthday: '',
@@ -418,7 +418,7 @@ export function mockLoginWithParams(params: LoginParams): Promise<LoginResponse>
               userInfo = {
                 id: `user_${Date.now()}`,
                 nickname: `用户_${phone.substring(7)}`,
-                avatarUrl: `https://picsum.photos/200/200?random=${Date.now()}`,
+                avatarUrl: `https://placehold.co/200x200/333/fff?random=${Date.now()}`,
                 bio: '',
                 gender: 0,
                 birthday: '',
@@ -471,7 +471,7 @@ export function mockLoginWithParams(params: LoginParams): Promise<LoginResponse>
             userInfo = {
               id: `wx_user_${Date.now()}`,
               nickname: wxUserInfo?.nickName || '微信用户',
-              avatarUrl: wxUserInfo?.avatarUrl || `https://picsum.photos/200/200?random=${Date.now()}`,
+              avatarUrl: wxUserInfo?.avatarUrl || `https://placehold.co/200x200/333/fff?random=${Date.now()}`,
               bio: '',
               gender: (wxUserInfo?.gender as 0 | 1 | 2) || 0,
               birthday: '',

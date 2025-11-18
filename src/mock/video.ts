@@ -6,13 +6,16 @@ import type { VideoInfo, TopicInfo, PublishVideoResult } from '@/types/video'
 import type { PaginationData } from '@/types/api'
 import { mockUsers } from './user'
 
+// 占位图颜色方案
+const topicColors = ['fe2c55', '25f4ee', '533483', 'e94560', '0f3460']
+
 // Mock 话题数据
 export const mockTopics: TopicInfo[] = [
   {
     id: 'topic_001',
     name: '舞蹈挑战',
     description: '展示你的舞蹈才华',
-    coverUrl: 'https://picsum.photos/200/200?random=t1',
+    coverUrl: `https://placehold.co/200x200/${topicColors[0]}/fff?text=${encodeURIComponent('舞蹈')}`,
     videoCount: 125000,
     participantCount: 89000,
     viewCount: 5600000
@@ -21,7 +24,7 @@ export const mockTopics: TopicInfo[] = [
     id: 'topic_002',
     name: '美食制作',
     description: '分享美味的制作过程',
-    coverUrl: 'https://picsum.photos/200/200?random=t2',
+    coverUrl: `https://placehold.co/200x200/${topicColors[1]}/fff?text=${encodeURIComponent('美食')}`,
     videoCount: 89000,
     participantCount: 67000,
     viewCount: 3200000
@@ -30,7 +33,7 @@ export const mockTopics: TopicInfo[] = [
     id: 'topic_003',
     name: '萌宠日常',
     description: '记录萌宠的可爱瞬间',
-    coverUrl: 'https://picsum.photos/200/200?random=t3',
+    coverUrl: `https://placehold.co/200x200/${topicColors[2]}/fff?text=${encodeURIComponent('萌宠')}`,
     videoCount: 156000,
     participantCount: 120000,
     viewCount: 8900000
@@ -39,7 +42,7 @@ export const mockTopics: TopicInfo[] = [
     id: 'topic_004',
     name: '旅行vlog',
     description: '分享旅途中的精彩',
-    coverUrl: 'https://picsum.photos/200/200?random=t4',
+    coverUrl: `https://placehold.co/200x200/${topicColors[3]}/fff?text=${encodeURIComponent('旅行')}`,
     videoCount: 78000,
     participantCount: 56000,
     viewCount: 2800000
@@ -48,7 +51,7 @@ export const mockTopics: TopicInfo[] = [
     id: 'topic_005',
     name: '知识分享',
     description: '学习新知识新技能',
-    coverUrl: 'https://picsum.photos/200/200?random=t5',
+    coverUrl: `https://placehold.co/200x200/${topicColors[4]}/fff?text=${encodeURIComponent('知识')}`,
     videoCount: 234000,
     participantCount: 180000,
     viewCount: 12000000
@@ -81,21 +84,25 @@ const musicNames = [
   '踏山河'
 ]
 
+// 视频封面颜色方案
+const coverColors = ['1a1a2e', '16213e', '0f3460', '533483', 'e94560', '4a0e4e', '2c3e50', 'fe2c55', '25f4ee', '34495e']
+
 // Mock 视频数据 - 100条数据，混合视频和图片轮播
 export const mockVideos: VideoInfo[] = Array.from({ length: 100 }, (_, i) => {
   // 每3个中有1个是图片轮播
   const isSlideshow = i % 3 === 2
   const imageCount = 3 + Math.floor(Math.random() * 6) // 3-8张图片
+  const colorIndex = i % coverColors.length
 
   return {
     id: `video_${String(i + 1).padStart(3, '0')}`,
     type: isSlideshow ? 'slideshow' : 'video',
     title: getRandomTitle(i),
     description: getRandomDescription(i),
-    coverUrl: `https://picsum.photos/720/1280?random=${i + 1}`,
+    coverUrl: `https://placehold.co/720x1280/${coverColors[colorIndex]}/fff?text=${encodeURIComponent(isSlideshow ? '图集' : '视频')}${i + 1}`,
     videoUrl: isSlideshow ? '' : videoUrls[i % videoUrls.length],
     images: isSlideshow
-      ? Array.from({ length: imageCount }, (_, j) => `https://picsum.photos/720/1280?random=slide${i}_${j}`)
+      ? Array.from({ length: imageCount }, (_, j) => `https://placehold.co/720x1280/${coverColors[(colorIndex + j) % coverColors.length]}/fff?text=${encodeURIComponent('图')}${j + 1}`)
       : undefined,
     musicUrl: isSlideshow ? 'https://example.com/music.mp3' : undefined,
     musicName: isSlideshow ? musicNames[i % musicNames.length] : undefined,

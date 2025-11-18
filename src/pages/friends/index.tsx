@@ -9,6 +9,9 @@ import { navigateTo } from '@/utils/navigation'
 import { formatNumber } from '@/utils/format'
 import styles from './index.module.scss'
 
+// 占位图颜色方案（深色主题友好）
+const placeholderColors = ['1a1a2e', '16213e', '0f3460', '533483', 'e94560', '4a0e4e', '2c3e50', '34495e']
+
 // Mock 好友动态数据 - 瀑布流格式
 const mockWaterfallItems = Array.from({ length: 40 }, (_, i) => ({
   id: `item_${i + 1}`,
@@ -18,9 +21,9 @@ const mockWaterfallItems = Array.from({ length: 40 }, (_, i) => ({
       '小红薯创作者', '美食达人', '旅行家', '舞蹈博主', '知识分享',
       '时尚博主', '摄影师', '健身教练', '美妆达人', '生活家'
     ][i % 10],
-    avatarUrl: `https://picsum.photos/200/200?random=user${i + 1}`
+    avatarUrl: `https://placehold.co/200x200/${placeholderColors[i % 8]}/fff?text=${encodeURIComponent(['创', '食', '旅', '舞', '知', '尚', '摄', '健', '美', '活'][i % 10])}`
   },
-  imageUrl: `https://picsum.photos/${300 + (i % 3) * 50}/${400 + (i % 4) * 100}?random=item${i + 1}`,
+  imageUrl: `https://placehold.co/${300 + (i % 3) * 50}x${400 + (i % 4) * 100}/${placeholderColors[i % 8]}/fff?text=${encodeURIComponent(['穿搭', '美食', '风景', '舞蹈', '技巧', '妆容', '打卡', '健身', '手作', '日常'][i % 10])}`,
   title: [
     '今天的穿搭分享', '超好吃的早餐', '绝美日落', '新学的舞蹈',
     '分享一个小技巧', '今日妆容', '旅行打卡', '健身第100天',
@@ -37,7 +40,7 @@ const mockWaterfallItems = Array.from({ length: 40 }, (_, i) => ({
 const mockStories = [
   {
     id: 's1',
-    user: { nickname: '我', avatarUrl: 'https://picsum.photos/200/200?random=me' },
+    user: { nickname: '我', avatarUrl: 'https://placehold.co/200x200/fe2c55/fff?text=Me' },
     isAllViewed: true,
     isMine: true
   },
@@ -46,7 +49,7 @@ const mockStories = [
     user: {
       nickname: ['旅行家小美', '舞蹈小王子', '知识分享官', '美食猎人', '时尚icon',
         '健身达人', '摄影大师', '手作匠人', '宠物博主', '音乐人'][i],
-      avatarUrl: `https://picsum.photos/200/200?random=story${i + 1}`
+      avatarUrl: `https://placehold.co/200x200/${placeholderColors[i % 8]}/fff?text=${encodeURIComponent(['旅', '舞', '知', '食', '尚', '健', '摄', '手', '宠', '音'][i])}`
     },
     isAllViewed: Math.random() > 0.5
   }))
