@@ -1,5 +1,12 @@
 /**
- * 直播间样式
+ * 直播间样式 - 升级版
+ *
+ * 【动效学习要点】
+ * 1. @keyframes 定义动画序列
+ * 2. animation 属性组合使用
+ * 3. transform 多属性组合
+ * 4. 贝塞尔曲线 cubic-bezier 自定义缓动
+ * 5. CSS变量动态控制颜色
  */
 
 .container {
@@ -10,7 +17,8 @@
   overflow: hidden;
 }
 
-// 视频区域
+// ==================== 视频区域 ====================
+
 .videoArea {
   position: absolute;
   top: 0;
@@ -19,18 +27,26 @@
   height: 100%;
 }
 
-.videoBg {
+.liveVideo {
   width: 100%;
   height: 100%;
 }
 
-// 顶部信息栏
+.danmakuLayer {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+// ==================== 顶部信息栏 ====================
+
 .topBar {
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
-  padding: 60px 20px 20px;
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -40,53 +56,117 @@
 .anchorInfo {
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.4);
-  border-radius: 30px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 40px;
   padding: 8px;
-  padding-right: 16px;
+  padding-right: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.anchorAvatarWrapper {
+  position: relative;
+  margin-right: 12px;
 }
 
 .anchorAvatar {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  margin-right: 12px;
+  border: 2px solid #fe2c55;
+}
+
+.liveIndicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 16px;
+  height: 16px;
+  background: #fe2c55;
+  border-radius: 50%;
+  border: 2px solid #000;
+  animation: livePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }
 
 .anchorMeta {
   display: flex;
   flex-direction: column;
-  margin-right: 16px;
+  margin-right: 12px;
+}
+
+.anchorNameRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .anchorName {
   font-size: 26px;
   color: #fff;
-  font-weight: 500;
+  font-weight: 600;
+}
+
+.levelBadge {
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+  font-size: 18px;
+  color: #fff;
 }
 
 .viewerCount {
   font-size: 20px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.8);
   margin-top: 4px;
 }
 
 .followBtn {
-  padding: 8px 20px;
+  padding: 8px 16px;
   background: #fe2c55;
   border-radius: 16px;
   font-size: 22px;
   color: #fff;
+  font-weight: 500;
+
+  &.followed {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.categoryTag {
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  font-size: 20px;
+  color: #fff;
+  backdrop-filter: blur(10px);
 }
 
 .closeBtn {
-  width: 60px;
-  height: 60px;
-  background: rgba(0, 0, 0, 0.4);
+  width: 56px;
+  height: 56px;
+  background: rgba(0, 0, 0, 0.5);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(10px);
 }
 
 .closeIcon {
@@ -115,36 +195,73 @@
   }
 }
 
-// 消息列表
+// ==================== 房间标题 ====================
+
+.roomTitle {
+  position: absolute;
+  left: 20px;
+  right: 20px;
+}
+
+.titleText {
+  font-size: 28px;
+  color: #fff;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.tagList {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.tag {
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+// ==================== 消息列表 ====================
+
 .messageList {
   position: absolute;
   left: 20px;
-  bottom: 160px;
-  width: 60%;
-  max-height: 300px;
+  width: 65%;
 }
 
 .messageItem {
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .chatMessage,
-.giftMessage {
+.giftMessage,
+.enterMessage {
   display: inline-flex;
   flex-wrap: wrap;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.4);
   border-radius: 8px;
-  padding: 8px 12px;
+  padding: 6px 12px;
+  backdrop-filter: blur(4px);
 }
 
 .giftMessage {
-  background: rgba(254, 44, 85, 0.3);
+  background: linear-gradient(135deg, rgba(254, 44, 85, 0.4), rgba(255, 107, 129, 0.4));
+}
+
+.enterMessage {
+  background: rgba(37, 244, 238, 0.3);
+  font-size: 22px;
+  color: #25f4ee;
 }
 
 .userName {
   font-size: 24px;
   color: #25f4ee;
   margin-right: 8px;
+  font-weight: 500;
 }
 
 .messageText {
@@ -154,10 +271,263 @@
 
 .giftText {
   font-size: 24px;
-  color: #ffcc00;
+  color: #ffd700;
 }
 
-// 点赞动画
+// ==================== 礼物动画层 ====================
+
+.giftAnimationLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.giftAnimation {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.giftIcon {
+  font-size: 80px;
+}
+
+.giftCount {
+  font-size: 36px;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+// ==================== 礼物动画效果 ====================
+
+// 漂浮动画
+.anim_float {
+  bottom: 30%;
+  left: 50%;
+  animation: floatUp 2s ease-out forwards;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translate(-50%, 0) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50px) scale(1.2);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, -200px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -300px) scale(0.8);
+    opacity: 0;
+  }
+}
+
+// 爱心动画
+.anim_heart {
+  bottom: 40%;
+  left: 50%;
+  animation: heartBeat 2s ease-out forwards;
+}
+
+@keyframes heartBeat {
+  0% {
+    transform: translate(-50%, 0) scale(0);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, 0) scale(1.5);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-50%, 0) scale(1);
+  }
+  45% {
+    transform: translate(-50%, 0) scale(1.3);
+  }
+  60% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -200px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+// 爆炸动画
+.anim_explode {
+  top: 50%;
+  left: 50%;
+  animation: explode 2s ease-out forwards;
+}
+
+@keyframes explode {
+  0% {
+    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, -50%) scale(2) rotate(180deg);
+    opacity: 1;
+  }
+  40% {
+    transform: translate(-50%, -50%) scale(1.5) rotate(360deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+// 火箭动画
+.anim_rocket {
+  bottom: 0;
+  left: 50%;
+  animation: rocketLaunch 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+}
+
+@keyframes rocketLaunch {
+  0% {
+    transform: translate(-50%, 100%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-50%, 0) scale(1.2) rotate(-5deg);
+  }
+  60% {
+    transform: translate(-50%, -50vh) scale(1.5) rotate(5deg);
+  }
+  100% {
+    transform: translate(-50%, -120vh) scale(2) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+// 下雨动画
+.anim_rain {
+  top: 20%;
+  left: 50%;
+  animation: rainFall 2s ease-in forwards;
+}
+
+@keyframes rainFall {
+  0% {
+    transform: translate(-50%, -100%) scale(0.5);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+  80% {
+    transform: translate(-50%, 40vh) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, 60vh) scale(0.8);
+    opacity: 0;
+  }
+}
+
+// 皇冠动画
+.anim_crown {
+  top: 30%;
+  left: 50%;
+  animation: crownDrop 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes crownDrop {
+  0% {
+    transform: translate(-50%, -200%) scale(0.5) rotate(-30deg);
+    opacity: 0;
+  }
+  40% {
+    transform: translate(-50%, 0) scale(1.3) rotate(10deg);
+    opacity: 1;
+  }
+  60% {
+    transform: translate(-50%, -20px) scale(1) rotate(-5deg);
+  }
+  80% {
+    transform: translate(-50%, 0) scale(1.1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, 100px) scale(0.8) rotate(0deg);
+    opacity: 0;
+  }
+}
+
+// 烟花动画
+.anim_firework {
+  top: 40%;
+  left: 50%;
+  animation: firework 3s ease-out forwards;
+
+  &::before,
+  &::after {
+    content: '✨';
+    position: absolute;
+    font-size: 30px;
+    animation: sparkle 3s ease-out forwards;
+  }
+
+  &::before {
+    animation-delay: 0.5s;
+  }
+
+  &::after {
+    animation-delay: 0.8s;
+  }
+}
+
+@keyframes firework {
+  0% {
+    transform: translate(-50%, 100vh) scale(0.5);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-50%, 0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, 0) scale(2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, 0) scale(3);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle {
+  0%, 30% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(var(--x, 50px), var(--y, -50px)) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(var(--x, 50px) * 2), calc(var(--y, -50px) * 2)) scale(0);
+    opacity: 0;
+  }
+}
+
+// ==================== 点赞动画 ====================
+
 .likeAnimations {
   position: absolute;
   right: 30px;
@@ -168,43 +538,55 @@
 .likeHeart {
   position: absolute;
   bottom: 0;
-  font-size: 40px;
-  animation: floatUp 1s ease-out forwards;
+  font-size: 36px;
+  animation: likeFloat 1.5s ease-out forwards;
+
+  @for $i from 1 through 20 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+      left: #{random(40) - 20}px;
+    }
+  }
 }
 
-@keyframes floatUp {
+@keyframes likeFloat {
   0% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-100px) scale(1.2) rotate(#{random(30) - 15}deg);
   }
   100% {
     opacity: 0;
-    transform: translateY(-200px) scale(1.5);
+    transform: translateY(-250px) scale(0.8) rotate(#{random(60) - 30}deg);
   }
 }
 
-// 底部操作栏
+// ==================== 底部操作栏 ====================
+
 .bottomBar {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 20px;
-  padding-bottom: 40px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.6), transparent);
 }
 
 .inputWrapper {
   flex: 1;
   height: 72px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 36px;
   padding: 0 24px;
   display: flex;
   align-items: center;
+  backdrop-filter: blur(10px);
 }
 
 .input {
@@ -217,18 +599,18 @@
 .iconBtn {
   width: 72px;
   height: 72px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(10px);
 
   &.active {
     background: rgba(37, 244, 238, 0.3);
   }
 }
 
-// 弹幕图标
 .danmakuIcon {
   width: 36px;
   height: 28px;
@@ -244,7 +626,6 @@
     width: 16px;
     height: 2px;
     background: #fff;
-    border-radius: 1px;
   }
 
   &::after {
@@ -255,81 +636,43 @@
     width: 12px;
     height: 2px;
     background: #fff;
-    border-radius: 1px;
   }
 }
 
-// 礼物图标
-.giftIcon {
-  width: 36px;
-  height: 36px;
-  position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 6px;
-    width: 24px;
-    height: 20px;
-    background: #ffcc00;
-    border-radius: 4px;
-  }
-
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 8px;
-    height: 12px;
-    background: #fe2c55;
-    border-radius: 50% 50% 0 0;
-  }
-}
-
-// 点赞按钮
-.likeBtn {
+.giftBtn {
   width: 72px;
   height: 72px;
-  background: #fe2c55;
+  background: linear-gradient(135deg, #ff6b81, #fe2c55);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 32px;
+  box-shadow: 0 4px 12px rgba(254, 44, 85, 0.4);
 }
 
-.heartIcon {
-  width: 32px;
-  height: 28px;
-  position: relative;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    width: 16px;
-    height: 24px;
-    border-radius: 16px 16px 0 0;
-    background: #fff;
-  }
-
-  &::before {
-    left: 15px;
-    transform: rotate(-45deg);
-    transform-origin: 0 100%;
-  }
-
-  &::after {
-    left: 0;
-    transform: rotate(45deg);
-    transform-origin: 100% 100%;
-  }
+.likeBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 80px;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 36px;
+  padding: 0 16px;
+  backdrop-filter: blur(10px);
+  font-size: 28px;
 }
 
-// 礼物面板
+.likeCount {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+
+// ==================== 礼物面板 ====================
+
 .giftPanel {
   position: fixed;
   top: 0;
@@ -353,32 +696,59 @@
   bottom: 0;
   left: 0;
   right: 0;
-  background: #1a1a1a;
+  background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
   border-radius: 24px 24px 0 0;
-  padding-bottom: 40px;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 
 .giftPanelHeader {
-  padding: 24px;
-  text-align: center;
-  font-size: 30px;
-  color: #fff;
-  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.giftPanelTitle {
+  font-size: 32px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.giftBalance {
+  font-size: 24px;
+  color: #ffd700;
+}
+
 .giftList {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 20px;
+  padding: 20px 0;
+  white-space: nowrap;
 }
 
 .giftItem {
-  width: 25%;
-  display: flex;
+  display: inline-flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  width: 140px;
+  padding: 16px 0;
+  margin: 0 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.2s ease;
+
+  &.selected {
+    background: rgba(254, 44, 85, 0.3);
+    transform: scale(1.05);
+  }
 }
 
 .giftEmoji {
@@ -387,12 +757,58 @@
 }
 
 .giftName {
-  font-size: 24px;
+  font-size: 22px;
   color: #fff;
   margin-bottom: 4px;
 }
 
 .giftPrice {
-  font-size: 20px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.giftActions {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  gap: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.countSelector {
+  flex: 1;
+  display: flex;
+  gap: 8px;
+}
+
+.countItem {
+  flex: 1;
+  padding: 12px 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  text-align: center;
+  font-size: 24px;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+
+  &.active {
+    background: rgba(254, 44, 85, 0.3);
+    color: #fff;
+  }
+}
+
+.sendBtn {
+  padding: 12px 32px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  font-size: 28px;
   color: rgba(255, 255, 255, 0.5);
+  font-weight: 500;
+  transition: all 0.2s ease;
+
+  &.active {
+    background: linear-gradient(135deg, #ff6b81, #fe2c55);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(254, 44, 85, 0.4);
+  }
 }

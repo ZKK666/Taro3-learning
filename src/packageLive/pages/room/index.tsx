@@ -1,18 +1,25 @@
 /**
- * 直播间页面
+ * 直播间页面 - 升级版
  *
- * 实现完整的直播间功能：
- * 1. 直播视频流（模拟）
- * 2. 弹幕系统
- * 3. 礼物系统
- * 4. 主播信息
- * 5. 观众互动
+ * 完整的直播间功能实现：
+ * 1. 安全区域适配（刘海屏、底部安全区）
+ * 2. 视频流模拟
+ * 3. 实时弹幕系统
+ * 4. 丰富的礼物系统 + 炫酷动效
+ * 5. 主播信息与互动
+ * 6. 用户评论消息
+ *
+ * 【动效学习要点】
+ * - CSS Keyframes 动画
+ * - Transform 变换组合
+ * - 贝塞尔曲线缓动
+ * - 粒子效果模拟
  */
 
-import { useState, useEffect, useRef } from 'react'
-import { View, Text, Image, Input, ScrollView } from '@tarojs/components'
+import { useState, useEffect, useRef, useMemo } from 'react'
+import { View, Text, Image, Input, ScrollView, Video } from '@tarojs/components'
 import Taro, { useRouter, useUnload } from '@tarojs/taro'
-import { useAppStore } from '@/stores'
+import { useSafeArea, getDanmakuArea, getLiveMessageArea } from '@/utils/safeArea'
 import { formatNumber } from '@/utils/format'
 import { Danmaku, generateMockDanmaku, DanmakuItem } from '@/components/Danmaku'
 import { liveService, LiveMessage } from '@/services/live'
@@ -25,6 +32,15 @@ interface Gift {
   name: string
   icon: string
   price: number
+  animation: 'float' | 'explode' | 'rocket' | 'rain' | 'heart' | 'crown' | 'firework'
+  color: string
+}
+
+interface GiftAnimation {
+  id: string
+  gift: Gift
+  count: number
+  timestamp: number
 }
 
 interface RoomInfo {
@@ -32,25 +48,82 @@ interface RoomInfo {
   title: string
   anchorName: string
   anchorAvatar: string
+  anchorLevel: number
   viewerCount: number
   likeCount: number
+  category: string
+  tags: string[]
 }
 
-// ==================== Mock数据 ====================
+// ==================== 礼物数据 ====================
 
 const mockGifts: Gift[] = [
-  { id: 'gift_1', name: '小心心', icon: '❤️', price: 1 },
-  { id: 'gift_2', name: '棒棒糖', icon: '🍭', price: 5 },
-  { id: 'gift_3', name: '玫瑰花', icon: '🌹', price: 10 },
-  { id: 'gift_4', name: '火箭', icon: '🚀', price: 100 },
-  { id: 'gift_5', name: '皇冠', icon: '👑', price: 500 },
+  { id: 'gift_1', name: '小心心', icon: '❤️', price: 1, animation: 'heart', color: '#fe2c55' },
+  { id: 'gift_2', name: '棒棒糖', icon: '🍭', price: 5, animation: 'float', color: '#ff69b4' },
+  { id: 'gift_3', name: '玫瑰花', icon: '🌹', price: 10, animation: 'rain', color: '#ff4757' },
+  { id: 'gift_4', name: '啤酒', icon: '🍺', price: 20, animation: 'float', color: '#ffa502' },
+  { id: 'gift_5', name: '蛋糕', icon: '🎂', price: 52, animation: 'explode', color: '#ff6b81' },
+  { id: 'gift_6', name: '钻石', icon: '💎', price: 100, animation: 'explode', color: '#70a1ff' },
+  { id: 'gift_7', name: '火箭', icon: '🚀', price: 500, animation: 'rocket', color: '#ff6348' },
+  { id: 'gift_8', name: '皇冠', icon: '👑', price: 1000, animation: 'crown', color: '#ffd700' },
+  { id: 'gift_9', name: '跑车', icon: '🏎️', price: 2000, animation: 'rocket', color: '#c0392b' },
+  { id: 'gift_10', name: '烟花', icon: '🎆', price: 5000, animation: 'firework', color: '#9b59b6' },
+  { id: 'gift_11', name: '城堡', icon: '🏰', price: 10000, animation: 'firework', color: '#3498db' },
+  { id: 'gift_12', name: '游艇', icon: '🛥️', price: 52000, animation: 'rocket', color: '#1abc9c' },
 ]
+
+// ==================== Mock视频流 ====================
+
+const liveVideoUrls = [
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+  'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+]
+
+// ==================== Mock房间数据 ====================
+
+const mockRoomData: Record<string, RoomInfo> = {
+  'live_1': {
+    id: 'live_1',
+    title: '今晚不下播！陪你到天亮',
+    anchorName: '主播小哥',
+    anchorAvatar: 'https://placehold.co/100x100/fe2c55/fff?text=A',
+    anchorLevel: 48,
+    viewerCount: 12580,
+    likeCount: 856000,
+    category: '聊天',
+    tags: ['深夜陪伴', '连麦PK'],
+  },
+  'live_2': {
+    id: 'live_2',
+    title: '绝地求生 冲击王牌',
+    anchorName: '游戏大神',
+    anchorAvatar: 'https://placehold.co/100x100/25f4ee/fff?text=G',
+    anchorLevel: 65,
+    viewerCount: 45200,
+    likeCount: 2350000,
+    category: '游戏',
+    tags: ['吃鸡', '技术流'],
+  },
+  'live_3': {
+    id: 'live_3',
+    title: '古风舞蹈教学',
+    anchorName: '舞蹈小仙女',
+    anchorAvatar: 'https://placehold.co/100x100/ff69b4/fff?text=D',
+    anchorLevel: 52,
+    viewerCount: 8900,
+    likeCount: 520000,
+    category: '舞蹈',
+    tags: ['古风', '教学'],
+  },
+}
 
 // ==================== 组件 ====================
 
 export default function LiveRoom() {
   const router = useRouter()
-  const { systemInfo } = useAppStore()
+  const safeArea = useSafeArea()
   const roomId = router.params.id || 'live_1'
 
   // 房间信息
@@ -59,8 +132,11 @@ export default function LiveRoom() {
     title: '直播间',
     anchorName: '主播',
     anchorAvatar: 'https://placehold.co/100x100/fe2c55/fff?text=Live',
+    anchorLevel: 1,
     viewerCount: 0,
     likeCount: 0,
+    category: '聊天',
+    tags: [],
   })
 
   // 消息列表
@@ -77,41 +153,66 @@ export default function LiveRoom() {
   const [giftPanelVisible, setGiftPanelVisible] = useState(false)
   // 点赞动画
   const [likeAnimations, setLikeAnimations] = useState<string[]>([])
+  // 礼物动画队列
+  const [giftAnimations, setGiftAnimations] = useState<GiftAnimation[]>([])
+  // 选中的礼物
+  const [selectedGift, setSelectedGift] = useState<Gift | null>(null)
+  // 礼物数量
+  const [giftCount, setGiftCount] = useState(1)
+  // 是否关注
+  const [isFollowed, setIsFollowed] = useState(false)
 
   // 消息列表滚动
   const scrollRef = useRef<string>('')
 
+  // 计算弹幕区域
+  const danmakuArea = useMemo(() => getDanmakuArea(), [])
+  const messageArea = useMemo(() => getLiveMessageArea(), [])
+
+  // 视频URL
+  const videoUrl = useMemo(() => {
+    const index = parseInt(roomId.replace('live_', '')) % liveVideoUrls.length
+    return liveVideoUrls[index]
+  }, [roomId])
+
   // 初始化直播间
   useEffect(() => {
-    // 加载房间信息
     loadRoomInfo()
 
     // 生成初始弹幕
-    const initialDanmaku = generateMockDanmaku(100, 300)
+    const initialDanmaku = generateMockDanmaku(150, 600)
     setDanmakuData(initialDanmaku)
 
-    // 模拟时间流逝（用于弹幕）
+    // 模拟时间流逝
     const timer = setInterval(() => {
-      setCurrentTime(prev => (prev + 0.1) % 300)
+      setCurrentTime(prev => (prev + 0.1) % 600)
     }, 100)
 
     // 模拟消息接收
     const messageTimer = setInterval(() => {
       addMockMessage()
-    }, 2000 + Math.random() * 3000)
+    }, 1500 + Math.random() * 2000)
 
     // 模拟观众数量变化
     const viewerTimer = setInterval(() => {
       setRoomInfo(prev => ({
         ...prev,
-        viewerCount: prev.viewerCount + Math.floor(Math.random() * 10) - 3,
+        viewerCount: Math.max(100, prev.viewerCount + Math.floor(Math.random() * 20) - 8),
       }))
+    }, 3000)
+
+    // 模拟随机礼物
+    const giftTimer = setInterval(() => {
+      if (Math.random() > 0.7) {
+        simulateRandomGift()
+      }
     }, 5000)
 
     return () => {
       clearInterval(timer)
       clearInterval(messageTimer)
       clearInterval(viewerTimer)
+      clearInterval(giftTimer)
     }
   }, [roomId])
 
@@ -122,51 +223,79 @@ export default function LiveRoom() {
 
   // 加载房间信息
   const loadRoomInfo = async () => {
-    // 模拟加载
     await new Promise(resolve => setTimeout(resolve, 300))
 
-    setRoomInfo({
+    const mockRoom = mockRoomData[roomId] || {
       id: roomId,
-      title: '今晚不下播',
-      anchorName: '主播小哥',
-      anchorAvatar: `https://placehold.co/100x100/333/fff?random=${roomId}`,
-      viewerCount: Math.floor(Math.random() * 10000) + 1000,
-      likeCount: Math.floor(Math.random() * 100000) + 10000,
-    })
+      title: '精彩直播进行中',
+      anchorName: `主播${roomId.replace('live_', '')}号`,
+      anchorAvatar: `https://placehold.co/100x100/333/fff?text=${roomId.replace('live_', '')}`,
+      anchorLevel: Math.floor(Math.random() * 50) + 10,
+      viewerCount: Math.floor(Math.random() * 10000) + 500,
+      likeCount: Math.floor(Math.random() * 500000) + 10000,
+      category: ['游戏', '音乐', '聊天', '舞蹈'][Math.floor(Math.random() * 4)],
+      tags: ['精彩', '互动'],
+    }
+
+    setRoomInfo(mockRoom)
   }
 
   // 添加模拟消息
   const addMockMessage = () => {
     const mockTexts = [
-      '主播好厉害',
-      '来了来了',
-      '太强了',
-      '学到了',
-      '666666',
-      '哈哈哈哈',
-      '感谢主播',
-      '继续继续',
+      '主播好厉害！', '来了来了', '太强了吧', '学到了', '666666',
+      '哈哈哈哈', '感谢主播', '继续继续', '刚来，发生什么了',
+      '主播唱首歌呗', '这波操作绝了', '我也想学', '太可爱了',
+      '主播加油', '今天状态好好', '什么时候下播', '连麦吗',
+      '欢迎新来的朋友', '点点关注不迷路', '感谢礼物',
+    ]
+
+    const mockNames = [
+      '开心果', '小太阳', '追梦人', '快乐水', '向日葵',
+      '小确幸', '暖心人', '星星眼', '甜甜圈', '小幸运',
     ]
 
     const newMessage: LiveMessage = {
-      id: `msg_${Date.now()}`,
+      id: `msg_${Date.now()}_${Math.random()}`,
       type: 'chat',
       userId: `user_${Math.floor(Math.random() * 1000)}`,
-      userName: `用户${Math.floor(Math.random() * 1000)}`,
-      userAvatar: `https://placehold.co/50x50/333/fff?random=${Math.random()}`,
+      userName: mockNames[Math.floor(Math.random() * mockNames.length)],
+      userAvatar: `https://placehold.co/50x50/${['fe2c55', '25f4ee', 'ff69b4', 'ffa502', '70a1ff'][Math.floor(Math.random() * 5)]}/fff`,
       content: mockTexts[Math.floor(Math.random() * mockTexts.length)],
       timestamp: Date.now(),
     }
 
-    setMessages(prev => [...prev.slice(-50), newMessage])
+    setMessages(prev => [...prev.slice(-100), newMessage])
     scrollRef.current = `msg_${newMessage.id}`
+  }
+
+  // 模拟随机礼物
+  const simulateRandomGift = () => {
+    const gift = mockGifts[Math.floor(Math.random() * 6)] // 只随机普通礼物
+    const userName = ['小可爱', '大帅哥', '小姐姐', '路人甲'][Math.floor(Math.random() * 4)]
+
+    // 添加消息
+    const newMessage: LiveMessage = {
+      id: `msg_${Date.now()}`,
+      type: 'gift',
+      userId: `user_${Math.floor(Math.random() * 1000)}`,
+      userName,
+      userAvatar: 'https://placehold.co/50x50/333/fff',
+      content: `送出 ${gift.name} x1`,
+      giftId: gift.id,
+      giftCount: 1,
+      timestamp: Date.now(),
+    }
+    setMessages(prev => [...prev.slice(-100), newMessage])
+
+    // 触发动画
+    triggerGiftAnimation(gift, 1)
   }
 
   // 发送弹幕
   const handleSendDanmaku = () => {
     if (!inputText.trim()) return
 
-    // 添加到弹幕
     const newDanmaku: DanmakuItem = {
       id: `danmaku_${Date.now()}`,
       text: inputText.trim(),
@@ -176,47 +305,63 @@ export default function LiveRoom() {
     }
     setDanmakuData(prev => [...prev, newDanmaku])
 
-    // 添加到消息列表
     const newMessage: LiveMessage = {
       id: `msg_${Date.now()}`,
       type: 'chat',
       userId: 'self',
       userName: '我',
-      userAvatar: 'https://placehold.co/50x50/333/fff?random=self',
+      userAvatar: 'https://placehold.co/50x50/25f4ee/fff?text=Me',
       content: inputText.trim(),
       timestamp: Date.now(),
     }
-    setMessages(prev => [...prev.slice(-50), newMessage])
+    setMessages(prev => [...prev.slice(-100), newMessage])
 
     setInputText('')
-
-    // 震动反馈
     Taro.vibrateShort({ type: 'light' })
   }
 
+  // 触发礼物动画
+  const triggerGiftAnimation = (gift: Gift, count: number) => {
+    const animationId = `anim_${Date.now()}_${Math.random()}`
+    const newAnimation: GiftAnimation = {
+      id: animationId,
+      gift,
+      count,
+      timestamp: Date.now(),
+    }
+
+    setGiftAnimations(prev => [...prev, newAnimation])
+
+    // 动画结束后移除
+    setTimeout(() => {
+      setGiftAnimations(prev => prev.filter(a => a.id !== animationId))
+    }, gift.animation === 'firework' ? 3000 : 2000)
+  }
+
   // 发送礼物
-  const handleSendGift = (gift: Gift) => {
+  const handleSendGift = () => {
+    if (!selectedGift) return
+
     const newMessage: LiveMessage = {
       id: `msg_${Date.now()}`,
       type: 'gift',
       userId: 'self',
       userName: '我',
-      userAvatar: 'https://placehold.co/50x50/333/fff?random=self',
-      content: `送出 ${gift.name}`,
-      giftId: gift.id,
-      giftCount: 1,
+      userAvatar: 'https://placehold.co/50x50/25f4ee/fff?text=Me',
+      content: `送出 ${selectedGift.name} x${giftCount}`,
+      giftId: selectedGift.id,
+      giftCount,
       timestamp: Date.now(),
     }
-    setMessages(prev => [...prev.slice(-50), newMessage])
+    setMessages(prev => [...prev.slice(-100), newMessage])
+
+    // 触发动画
+    triggerGiftAnimation(selectedGift, giftCount)
 
     setGiftPanelVisible(false)
+    setSelectedGift(null)
+    setGiftCount(1)
     Taro.vibrateShort({ type: 'medium' })
-
-    // 显示礼物效果提示
-    Taro.showToast({
-      title: `送出 ${gift.icon} ${gift.name}`,
-      icon: 'none',
-    })
   }
 
   // 点赞
@@ -226,14 +371,12 @@ export default function LiveRoom() {
       likeCount: prev.likeCount + 1,
     }))
 
-    // 添加点赞动画
-    const animationId = `like_${Date.now()}`
-    setLikeAnimations(prev => [...prev, animationId])
+    const animationId = `like_${Date.now()}_${Math.random()}`
+    setLikeAnimations(prev => [...prev.slice(-20), animationId])
 
-    // 移除动画
     setTimeout(() => {
       setLikeAnimations(prev => prev.filter(id => id !== animationId))
-    }, 1000)
+    }, 1500)
 
     Taro.vibrateShort({ type: 'light' })
   }
@@ -243,55 +386,116 @@ export default function LiveRoom() {
     Taro.navigateBack()
   }
 
+  // 关注
+  const handleFollow = () => {
+    setIsFollowed(!isFollowed)
+    Taro.vibrateShort({ type: 'medium' })
+  }
+
   return (
     <View className={styles.container}>
-      {/* 直播画面（模拟） */}
+      {/* 直播视频流 */}
       <View className={styles.videoArea}>
-        <Image
-          className={styles.videoBg}
-          src={`https://placehold.co/720x1280/1a1a2e/fff?random=${roomId}`}
-          mode="aspectFill"
+        <Video
+          id="live-video"
+          className={styles.liveVideo}
+          src={videoUrl}
+          autoplay
+          loop
+          muted={false}
+          showCenterPlayBtn={false}
+          showPlayBtn={false}
+          showFullscreenBtn={false}
+          showProgress={false}
+          controls={false}
+          objectFit="cover"
+          enableProgressGesture={false}
         />
 
         {/* 弹幕层 */}
-        <Danmaku
-          data={danmakuData}
-          currentTime={currentTime}
-          playing={true}
-          visible={danmakuVisible}
-          width={systemInfo.windowWidth}
-          height={systemInfo.windowHeight * 0.6}
-          opacity={0.9}
-          speed={1}
-          density={0.8}
-          fontSize={24}
-        />
+        <View
+          className={styles.danmakuLayer}
+          style={{
+            top: `${danmakuArea.top}px`,
+            height: `${danmakuArea.height}px`,
+          }}
+        >
+          <Danmaku
+            data={danmakuData}
+            currentTime={currentTime}
+            playing={true}
+            visible={danmakuVisible}
+            width={safeArea.screenWidth}
+            height={danmakuArea.height}
+            opacity={0.9}
+            speed={1.2}
+            density={0.8}
+            fontSize={26}
+          />
+        </View>
       </View>
 
       {/* 顶部信息栏 */}
-      <View className={styles.topBar}>
+      <View
+        className={styles.topBar}
+        style={{ paddingTop: `${safeArea.top + 10}px` }}
+      >
         {/* 主播信息 */}
         <View className={styles.anchorInfo}>
-          <Image
-            className={styles.anchorAvatar}
-            src={roomInfo.anchorAvatar}
-            mode="aspectFill"
-          />
+          <View className={styles.anchorAvatarWrapper}>
+            <Image
+              className={styles.anchorAvatar}
+              src={roomInfo.anchorAvatar}
+              mode="aspectFill"
+            />
+            <View className={styles.liveIndicator} />
+          </View>
           <View className={styles.anchorMeta}>
-            <Text className={styles.anchorName}>{roomInfo.anchorName}</Text>
+            <View className={styles.anchorNameRow}>
+              <Text className={styles.anchorName}>{roomInfo.anchorName}</Text>
+              <View className={styles.levelBadge}>
+                <Text>Lv.{roomInfo.anchorLevel}</Text>
+              </View>
+            </View>
             <Text className={styles.viewerCount}>
-              {formatNumber(roomInfo.viewerCount)} 观看
+              {formatNumber(roomInfo.viewerCount)} 在线
             </Text>
           </View>
-          <View className={styles.followBtn}>
-            <Text>关注</Text>
+          <View
+            className={`${styles.followBtn} ${isFollowed ? styles.followed : ''}`}
+            onClick={handleFollow}
+          >
+            <Text>{isFollowed ? '已关注' : '+ 关注'}</Text>
           </View>
         </View>
 
-        {/* 关闭按钮 */}
-        <View className={styles.closeBtn} onClick={handleClose}>
-          <View className={styles.closeIcon} />
+        {/* 右侧按钮 */}
+        <View className={styles.topActions}>
+          {/* 分类标签 */}
+          <View className={styles.categoryTag}>
+            <Text>{roomInfo.category}</Text>
+          </View>
+          {/* 关闭按钮 */}
+          <View className={styles.closeBtn} onClick={handleClose}>
+            <View className={styles.closeIcon} />
+          </View>
         </View>
+      </View>
+
+      {/* 房间标题 */}
+      <View className={styles.roomTitle} style={{ top: `${safeArea.top + 80}px` }}>
+        <Text className={styles.titleText} numberOfLines={1}>
+          {roomInfo.title}
+        </Text>
+        {roomInfo.tags.length > 0 && (
+          <View className={styles.tagList}>
+            {roomInfo.tags.map(tag => (
+              <View key={tag} className={styles.tag}>
+                <Text>#{tag}</Text>
+              </View>
+            ))}
+          </View>
+        )}
       </View>
 
       {/* 消息列表 */}
@@ -300,6 +504,10 @@ export default function LiveRoom() {
         scrollY
         scrollIntoView={scrollRef.current}
         scrollWithAnimation
+        style={{
+          bottom: `${messageArea.bottom}px`,
+          maxHeight: `${messageArea.maxHeight}px`,
+        }}
       >
         {messages.map(msg => (
           <View key={msg.id} id={`msg_${msg.id}`} className={styles.messageItem}>
@@ -307,6 +515,10 @@ export default function LiveRoom() {
               <View className={styles.giftMessage}>
                 <Text className={styles.userName}>{msg.userName}</Text>
                 <Text className={styles.giftText}>{msg.content}</Text>
+              </View>
+            ) : msg.type === 'enter' ? (
+              <View className={styles.enterMessage}>
+                <Text>{msg.userName} 进入了直播间</Text>
               </View>
             ) : (
               <View className={styles.chatMessage}>
@@ -318,15 +530,36 @@ export default function LiveRoom() {
         ))}
       </ScrollView>
 
+      {/* 礼物动画层 */}
+      <View className={styles.giftAnimationLayer}>
+        {giftAnimations.map(anim => (
+          <View
+            key={anim.id}
+            className={`${styles.giftAnimation} ${styles[`anim_${anim.gift.animation}`]}`}
+            style={{ '--gift-color': anim.gift.color } as React.CSSProperties}
+          >
+            <Text className={styles.giftIcon}>{anim.gift.icon}</Text>
+            {anim.count > 1 && (
+              <Text className={styles.giftCount}>x{anim.count}</Text>
+            )}
+          </View>
+        ))}
+      </View>
+
       {/* 点赞动画 */}
       <View className={styles.likeAnimations}>
         {likeAnimations.map(id => (
-          <View key={id} className={styles.likeHeart}>❤️</View>
+          <View key={id} className={styles.likeHeart}>
+            <Text>❤️</Text>
+          </View>
         ))}
       </View>
 
       {/* 底部操作栏 */}
-      <View className={styles.bottomBar}>
+      <View
+        className={styles.bottomBar}
+        style={{ paddingBottom: `${safeArea.bottom + 10}px` }}
+      >
         {/* 弹幕输入 */}
         <View className={styles.inputWrapper}>
           <Input
@@ -334,7 +567,7 @@ export default function LiveRoom() {
             value={inputText}
             placeholder="说点什么..."
             placeholderStyle="color: rgba(255,255,255,0.5)"
-            maxlength={30}
+            maxlength={50}
             onInput={(e) => setInputText(e.detail.value)}
             onConfirm={handleSendDanmaku}
           />
@@ -350,15 +583,16 @@ export default function LiveRoom() {
 
         {/* 礼物按钮 */}
         <View
-          className={styles.iconBtn}
+          className={styles.giftBtn}
           onClick={() => setGiftPanelVisible(true)}
         >
-          <View className={styles.giftIcon} />
+          <Text>🎁</Text>
         </View>
 
         {/* 点赞按钮 */}
         <View className={styles.likeBtn} onClick={handleLike}>
-          <View className={styles.heartIcon} />
+          <Text>❤️</Text>
+          <Text className={styles.likeCount}>{formatNumber(roomInfo.likeCount)}</Text>
         </View>
       </View>
 
@@ -366,22 +600,49 @@ export default function LiveRoom() {
       {giftPanelVisible && (
         <View className={styles.giftPanel}>
           <View className={styles.giftPanelMask} onClick={() => setGiftPanelVisible(false)} />
-          <View className={styles.giftPanelContent}>
+          <View
+            className={styles.giftPanelContent}
+            style={{ paddingBottom: `${safeArea.bottom + 20}px` }}
+          >
             <View className={styles.giftPanelHeader}>
-              <Text>礼物</Text>
+              <Text className={styles.giftPanelTitle}>礼物</Text>
+              <Text className={styles.giftBalance}>余额：88888 币</Text>
             </View>
-            <View className={styles.giftList}>
+
+            {/* 礼物列表 */}
+            <ScrollView scrollX className={styles.giftList} enhanced showScrollbar={false}>
               {mockGifts.map(gift => (
                 <View
                   key={gift.id}
-                  className={styles.giftItem}
-                  onClick={() => handleSendGift(gift)}
+                  className={`${styles.giftItem} ${selectedGift?.id === gift.id ? styles.selected : ''}`}
+                  onClick={() => setSelectedGift(gift)}
                 >
                   <Text className={styles.giftEmoji}>{gift.icon}</Text>
                   <Text className={styles.giftName}>{gift.name}</Text>
                   <Text className={styles.giftPrice}>{gift.price}币</Text>
                 </View>
               ))}
+            </ScrollView>
+
+            {/* 数量选择和发送 */}
+            <View className={styles.giftActions}>
+              <View className={styles.countSelector}>
+                {[1, 10, 66, 99, 520, 1314].map(count => (
+                  <View
+                    key={count}
+                    className={`${styles.countItem} ${giftCount === count ? styles.active : ''}`}
+                    onClick={() => setGiftCount(count)}
+                  >
+                    <Text>{count}</Text>
+                  </View>
+                ))}
+              </View>
+              <View
+                className={`${styles.sendBtn} ${selectedGift ? styles.active : ''}`}
+                onClick={handleSendGift}
+              >
+                <Text>赠送</Text>
+              </View>
             </View>
           </View>
         </View>
