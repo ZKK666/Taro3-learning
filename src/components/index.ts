@@ -14,3 +14,19 @@ export { default as Danmaku, generateMockDanmaku } from './Danmaku'
 export type { DanmakuItem, DanmakuType, DanmakuProps } from './Danmaku'
 export { default as VideoUpload } from './VideoUpload'
 export type { UploadConfig, UploadResult, VideoUploadProps } from './VideoUpload'
+
+// 骨架屏组件
+export {
+  default as Skeleton,
+  SkeletonBlock,
+  SkeletonCircle,
+  SkeletonText,
+  SkeletonImage,
+  VideoCardSkeleton,
+  VideoFeedSkeleton,
+  UserItemSkeleton,
+  ProfileSkeleton,
+  CommentListSkeleton,
+  LiveListSkeleton,
+  SkeletonWrapper,
+} from './Skeleton'

@@ -1,0 +1,252 @@
+/**
+ * 骨架屏样式
+ *
+ * 【学习要点】
+ * 1. Shimmer动画实现 - 使用linear-gradient
+ * 2. 性能优化 - transform代替left/right
+ * 3. 硬件加速 - will-change属性
+ */
+
+// ==================== 基础组件 ====================
+
+.block {
+  background-color: #e0e0e0;
+  position: relative;
+  overflow: hidden;
+
+  &.animate {
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.4) 50%,
+        transparent 100%
+      );
+      transform: translateX(-100%);
+      animation: shimmer 1.5s infinite;
+      will-change: transform;
+    }
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.textWrapper {
+  width: 100%;
+}
+
+// ==================== 视频卡片骨架 ====================
+
+.videoCard {
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.videoInfo {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  gap: 10px;
+}
+
+.videoMeta {
+  flex: 1;
+}
+
+// ==================== 视频Feed骨架 ====================
+
+.videoFeed {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: #000;
+}
+
+.feedActions {
+  position: absolute;
+  right: 16px;
+  bottom: 150px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.feedBottom {
+  position: absolute;
+  left: 16px;
+  right: 80px;
+  bottom: 80px;
+}
+
+// ==================== 用户列表项骨架 ====================
+
+.userItem {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  gap: 12px;
+}
+
+.userInfo {
+  flex: 1;
+}
+
+// ==================== 个人资料骨架 ====================
+
+.profile {
+  background: #fff;
+  min-height: 100vh;
+}
+
+.profileInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  margin-top: -40px;
+
+  > view:first-child {
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.profileStats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-top: 20px;
+  width: 100%;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.worksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 2px;
+  margin-top: 20px;
+}
+
+// ==================== 评论列表骨架 ====================
+
+.commentList {
+  padding: 16px;
+}
+
+.commentItem {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.commentContent {
+  flex: 1;
+}
+
+.commentActions {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+}
+
+// ==================== 直播列表骨架 ====================
+
+.liveList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 12px;
+}
+
+.liveItem {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.liveInfo {
+  padding: 8px;
+}
+
+.liveUser {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+// ==================== 暗色主题 ====================
+
+.dark {
+  .block {
+    background-color: #333;
+
+    &.animate::after {
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        transparent 100%
+      );
+    }
+  }
+}
+
+// ==================== 波浪动画变体 ====================
+
+.wave {
+  .block.animate::after {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.2) 20%,
+      rgba(255, 255, 255, 0.5) 50%,
+      rgba(255, 255, 255, 0.2) 80%,
+      transparent 100%
+    );
+    animation: shimmer 2s infinite;
+  }
+}
+
+// ==================== 脉冲动画变体 ====================
+
+.pulse {
+  .block.animate {
+    animation: pulse 1.5s ease-in-out infinite;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
