@@ -16,8 +16,8 @@
  * - 粒子效果模拟
  */
 
-import { useState, useEffect, useRef, useMemo } from 'react'
-import { View, Text, Image, Input, ScrollView, Video } from '@tarojs/components'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
+import { View, Text, Image, Input, ScrollView, Video, Canvas } from '@tarojs/components'
 import Taro, { useRouter, useUnload } from '@tarojs/taro'
 import { useSafeArea, getDanmakuArea, getLiveMessageArea } from '@/utils/safeArea'
 import { formatNumber } from '@/utils/format'
@@ -41,6 +41,27 @@ interface GiftAnimation {
   gift: Gift
   count: number
   timestamp: number
+  userName?: string
+  userAvatar?: string
+}
+
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  life: number
+  maxLife: number
+  color: string
+  size: number
+}
+
+interface LuxuryEffect {
+  id: string
+  gift: Gift
+  count: number
+  userName: string
+  userAvatar: string
 }
 
 interface RoomInfo {
@@ -161,9 +182,19 @@ export default function LiveRoom() {
   const [giftCount, setGiftCount] = useState(1)
   // 是否关注
   const [isFollowed, setIsFollowed] = useState(false)
+  // 豪华礼物特效
+  const [luxuryEffects, setLuxuryEffects] = useState<LuxuryEffect[]>([])
+  // 全屏闪光
+  const [screenFlash, setScreenFlash] = useState<string | null>(null)
+  // 粒子系统
+  const [particles, setParticles] = useState<Particle[]>([])
 
   // 消息列表滚动
   const scrollRef = useRef<string>('')
+  // Canvas context
+  const canvasRef = useRef<any>(null)
+  // 粒子动画帧
+  const particleFrameRef = useRef<number>(0)
 
   // 计算弹幕区域
   const danmakuArea = useMemo(() => getDanmakuArea(), [])
@@ -271,8 +302,16 @@ export default function LiveRoom() {
 
   // 模拟随机礼物
   const simulateRandomGift = () => {
-    const gift = mockGifts[Math.floor(Math.random() * 6)] // 只随机普通礼物
-    const userName = ['小可爱', '大帅哥', '小姐姐', '路人甲'][Math.floor(Math.random() * 4)]
+    // 偶尔出现高价礼物增加趣味性
+    const isLuxury = Math.random() > 0.9
+    const giftIndex = isLuxury
+      ? Math.floor(Math.random() * 5) + 7 // 高价礼物 (索引7-11)
+      : Math.floor(Math.random() * 7) // 普通礼物 (索引0-6)
+    const gift = mockGifts[giftIndex]
+    const userName = ['小可爱', '大帅哥', '小姐姐', '路人甲', '土豪哥', '神秘人'][Math.floor(Math.random() * 6)]
+    const colors = ['fe2c55', '25f4ee', 'ffd700', 'ff69b4', '70a1ff', '9b59b6']
+    const userAvatar = `https://placehold.co/60x60/${colors[Math.floor(Math.random() * colors.length)]}/fff?text=${userName[0]}`
+    const count = isLuxury ? [1, 1, 1, 10][Math.floor(Math.random() * 4)] : 1
 
     // 添加消息
     const newMessage: LiveMessage = {
@@ -280,16 +319,16 @@ export default function LiveRoom() {
       type: 'gift',
       userId: `user_${Math.floor(Math.random() * 1000)}`,
       userName,
-      userAvatar: 'https://placehold.co/50x50/333/fff',
-      content: `送出 ${gift.name} x1`,
+      userAvatar,
+      content: `送出 ${gift.name} x${count}`,
       giftId: gift.id,
-      giftCount: 1,
+      giftCount: count,
       timestamp: Date.now(),
     }
     setMessages(prev => [...prev.slice(-100), newMessage])
 
     // 触发动画
-    triggerGiftAnimation(gift, 1)
+    triggerGiftAnimation(gift, count, userName, userAvatar)
   }
 
   // 发送弹幕
@@ -320,23 +359,106 @@ export default function LiveRoom() {
     Taro.vibrateShort({ type: 'light' })
   }
 
+  // 创建粒子爆炸效果
+  const createParticleExplosion = useCallback((x: number, y: number, color: string, count: number = 30) => {
+    const newParticles: Particle[] = []
+    for (let i = 0; i < count; i++) {
+      const angle = (Math.PI * 2 * i) / count + Math.random() * 0.5
+      const speed = 3 + Math.random() * 5
+      newParticles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1,
+        maxLife: 1,
+        color,
+        size: 3 + Math.random() * 4,
+      })
+    }
+    setParticles(prev => [...prev, ...newParticles])
+
+    // 清理粒子
+    setTimeout(() => {
+      setParticles(prev => prev.filter(p => p.life > 0))
+    }, 2000)
+  }, [])
+
+  // 更新粒子位置
+  useEffect(() => {
+    if (particles.length === 0) return
+
+    const updateParticles = () => {
+      setParticles(prev =>
+        prev
+          .map(p => ({
+            ...p,
+            x: p.x + p.vx,
+            y: p.y + p.vy,
+            vy: p.vy + 0.15, // 重力
+            life: p.life - 0.02,
+          }))
+          .filter(p => p.life > 0)
+      )
+      particleFrameRef.current = requestAnimationFrame(updateParticles)
+    }
+
+    particleFrameRef.current = requestAnimationFrame(updateParticles)
+    return () => cancelAnimationFrame(particleFrameRef.current)
+  }, [particles.length > 0])
+
   // 触发礼物动画
-  const triggerGiftAnimation = (gift: Gift, count: number) => {
+  const triggerGiftAnimation = useCallback((gift: Gift, count: number, userName: string = '用户', userAvatar: string = '') => {
     const animationId = `anim_${Date.now()}_${Math.random()}`
     const newAnimation: GiftAnimation = {
       id: animationId,
       gift,
       count,
       timestamp: Date.now(),
+      userName,
+      userAvatar,
     }
 
     setGiftAnimations(prev => [...prev, newAnimation])
 
+    // 高价礼物特殊效果
+    if (gift.price >= 1000) {
+      // 全屏闪光
+      setScreenFlash(gift.color)
+      setTimeout(() => setScreenFlash(null), 800)
+
+      // 豪华横幅
+      const luxuryId = `luxury_${Date.now()}`
+      setLuxuryEffects(prev => [...prev, {
+        id: luxuryId,
+        gift,
+        count,
+        userName,
+        userAvatar: userAvatar || 'https://placehold.co/60x60/ffd700/fff?text=VIP',
+      }])
+      setTimeout(() => {
+        setLuxuryEffects(prev => prev.filter(e => e.id !== luxuryId))
+      }, 3500)
+
+      // 粒子爆炸
+      const centerX = safeArea.screenWidth / 2
+      const centerY = safeArea.screenHeight / 2
+      createParticleExplosion(centerX, centerY, gift.color, gift.price >= 5000 ? 60 : 40)
+    } else if (gift.price >= 100) {
+      // 中等价位礼物也添加粒子
+      const centerX = safeArea.screenWidth / 2
+      const centerY = safeArea.screenHeight / 2
+      createParticleExplosion(centerX, centerY, gift.color, 20)
+    }
+
     // 动画结束后移除
+    const duration = gift.animation === 'firework' ? 4000 :
+                     gift.animation === 'rocket' ? 3000 :
+                     gift.price >= 1000 ? 3000 : 2500
     setTimeout(() => {
       setGiftAnimations(prev => prev.filter(a => a.id !== animationId))
-    }, gift.animation === 'firework' ? 3000 : 2000)
-  }
+    }, duration)
+  }, [safeArea, createParticleExplosion])
 
   // 发送礼物
   const handleSendGift = () => {
@@ -356,12 +478,18 @@ export default function LiveRoom() {
     setMessages(prev => [...prev.slice(-100), newMessage])
 
     // 触发动画
-    triggerGiftAnimation(selectedGift, giftCount)
+    triggerGiftAnimation(
+      selectedGift,
+      giftCount,
+      '我',
+      'https://placehold.co/60x60/25f4ee/fff?text=Me'
+    )
 
     setGiftPanelVisible(false)
     setSelectedGift(null)
     setGiftCount(1)
-    Taro.vibrateShort({ type: 'medium' })
+    // 高价礼物震动更强
+    Taro.vibrateShort({ type: selectedGift.price >= 1000 ? 'heavy' : 'medium' })
   }
 
   // 点赞
@@ -530,6 +658,14 @@ export default function LiveRoom() {
         ))}
       </ScrollView>
 
+      {/* 全屏闪光效果 */}
+      {screenFlash && (
+        <View
+          className={styles.screenFlash}
+          style={{ '--gift-color': screenFlash } as React.CSSProperties}
+        />
+      )}
+
       {/* 礼物动画层 */}
       <View className={styles.giftAnimationLayer}>
         {giftAnimations.map(anim => (
@@ -544,7 +680,61 @@ export default function LiveRoom() {
             )}
           </View>
         ))}
+
+        {/* 粒子效果 */}
+        {particles.map((particle, index) => (
+          <View
+            key={`particle_${index}`}
+            style={{
+              position: 'absolute',
+              left: `${particle.x}px`,
+              top: `${particle.y}px`,
+              width: `${particle.size}px`,
+              height: `${particle.size}px`,
+              borderRadius: '50%',
+              backgroundColor: particle.color,
+              opacity: particle.life,
+              boxShadow: `0 0 ${particle.size * 2}px ${particle.color}`,
+              transform: `scale(${particle.life})`,
+            } as React.CSSProperties}
+          />
+        ))}
       </View>
+
+      {/* 豪华礼物横幅 */}
+      {luxuryEffects.map(effect => (
+        <View
+          key={effect.id}
+          className={styles.giftBanner}
+          style={{ '--gift-color': effect.gift.color } as React.CSSProperties}
+        >
+          <Image
+            className={styles.bannerAvatar}
+            src={effect.userAvatar}
+            mode="aspectFill"
+          />
+          <View className={styles.bannerContent}>
+            <Text className={styles.bannerUser}>{effect.userName}</Text>
+            <Text className={styles.bannerGift}>
+              送出 {effect.gift.name} x{effect.count}
+            </Text>
+          </View>
+          <Text className={styles.bannerIcon}>{effect.gift.icon}</Text>
+        </View>
+      ))}
+
+      {/* 连击显示 */}
+      {giftAnimations.filter(a => a.count >= 10).map(anim => (
+        <View
+          key={`combo_${anim.id}`}
+          className={styles.comboDisplay}
+          style={{ '--gift-color': anim.gift.color } as React.CSSProperties}
+        >
+          <Text className={styles.comboGift}>{anim.gift.icon}</Text>
+          <Text className={styles.comboText}>{anim.gift.name}</Text>
+          <Text className={styles.comboCount}>x{anim.count}</Text>
+        </View>
+      ))}
 
       {/* 点赞动画 */}
       <View className={styles.likeAnimations}>

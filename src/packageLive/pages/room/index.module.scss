@@ -295,48 +295,270 @@
 
 .giftIcon {
   font-size: 80px;
+  filter: drop-shadow(0 0 10px var(--gift-color, #fff));
 }
 
 .giftCount {
   font-size: 36px;
   color: #fff;
   font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow:
+    0 0 10px var(--gift-color, #fe2c55),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  animation: countPop 0.5s ease-out;
+}
+
+@keyframes countPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.5);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+// 粒子容器
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  font-size: 24px;
+  animation: particleFly 1.5s ease-out forwards;
+
+  @for $i from 1 through 12 {
+    &:nth-child(#{$i}) {
+      --angle: #{$i * 30}deg;
+      --distance: #{60 + random(40)}px;
+      --delay: #{$i * 0.05}s;
+      animation-delay: var(--delay);
+    }
+  }
+}
+
+@keyframes particleFly {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform:
+      translate(
+        calc(cos(var(--angle)) * var(--distance)),
+        calc(sin(var(--angle)) * var(--distance))
+      )
+      scale(0);
+    opacity: 0;
+  }
+}
+
+// 全屏闪光效果
+.screenFlash {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle at center, var(--gift-color, #fe2c55), transparent 70%);
+  animation: flashPulse 0.8s ease-out forwards;
+  pointer-events: none;
+  z-index: 100;
+}
+
+@keyframes flashPulse {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+// 连击显示
+.comboDisplay {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: comboAppear 2s ease-out forwards;
+}
+
+.comboGift {
+  font-size: 120px;
+  filter: drop-shadow(0 0 30px var(--gift-color, #fff));
+  animation: comboIconPulse 0.5s ease-out;
+}
+
+.comboText {
+  font-size: 48px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow:
+    0 0 20px var(--gift-color, #fe2c55),
+    0 0 40px var(--gift-color, #fe2c55);
+  animation: comboTextScale 0.3s ease-out 0.2s both;
+}
+
+.comboCount {
+  font-size: 80px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #ffd700, #ff6b81);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+  animation: comboCountBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.3s both;
+}
+
+@keyframes comboAppear {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8) translateY(-50px);
+  }
+}
+
+@keyframes comboIconPulse {
+  0% {
+    transform: scale(0) rotate(-30deg);
+  }
+  50% {
+    transform: scale(1.3) rotate(10deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes comboTextScale {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes comboCountBounce {
+  0% {
+    transform: scale(0) translateY(20px);
+  }
+  60% {
+    transform: scale(1.2) translateY(-10px);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+  }
 }
 
 // ==================== 礼物动画效果 ====================
 
-// 漂浮动画
+// ==================== 增强版礼物动画效果 ====================
+
+// 漂浮动画 - 带3D旋转和光晕
 .anim_float {
   bottom: 30%;
   left: 50%;
-  animation: floatUp 2s ease-out forwards;
+  animation: floatUp 2.5s ease-out forwards;
+  perspective: 1000px;
+
+  .giftIcon {
+    animation: floatSpin 2.5s ease-out forwards;
+  }
 }
 
 @keyframes floatUp {
   0% {
-    transform: translate(-50%, 0) scale(0.5);
+    transform: translate(-50%, 0) scale(0.3);
     opacity: 0;
+    filter: blur(10px);
   }
-  20% {
-    transform: translate(-50%, -50px) scale(1.2);
+  15% {
+    transform: translate(-50%, -30px) scale(1.4);
     opacity: 1;
+    filter: blur(0) drop-shadow(0 0 30px var(--gift-color, #ff69b4));
   }
-  80% {
-    transform: translate(-50%, -200px) scale(1);
-    opacity: 1;
+  40% {
+    transform: translate(-60%, -120px) scale(1.1);
+  }
+  60% {
+    transform: translate(-40%, -200px) scale(1);
+    filter: drop-shadow(0 0 20px var(--gift-color, #ff69b4));
   }
   100% {
-    transform: translate(-50%, -300px) scale(0.8);
+    transform: translate(-50%, -350px) scale(0.6);
     opacity: 0;
+    filter: blur(5px);
   }
 }
 
-// 爱心动画
+@keyframes floatSpin {
+  0% {
+    transform: rotateY(0deg) rotateZ(-10deg);
+  }
+  25% {
+    transform: rotateY(90deg) rotateZ(5deg);
+  }
+  50% {
+    transform: rotateY(180deg) rotateZ(-5deg);
+  }
+  75% {
+    transform: rotateY(270deg) rotateZ(5deg);
+  }
+  100% {
+    transform: rotateY(360deg) rotateZ(0deg);
+  }
+}
+
+// 爱心动画 - 多重脉冲 + 分裂效果
 .anim_heart {
   bottom: 40%;
   left: 50%;
-  animation: heartBeat 2s ease-out forwards;
+  animation: heartBeat 2.5s ease-out forwards;
+
+  &::before,
+  &::after {
+    content: '💕';
+    position: absolute;
+    font-size: 40px;
+    opacity: 0;
+  }
+
+  &::before {
+    animation: heartSplit1 2.5s ease-out 0.3s forwards;
+  }
+
+  &::after {
+    animation: heartSplit2 2.5s ease-out 0.3s forwards;
+  }
 }
 
 @keyframes heartBeat {
@@ -344,81 +566,250 @@
     transform: translate(-50%, 0) scale(0);
     opacity: 0;
   }
-  15% {
-    transform: translate(-50%, 0) scale(1.5);
+  10% {
+    transform: translate(-50%, 0) scale(1.8);
     opacity: 1;
+    filter: drop-shadow(0 0 40px #fe2c55);
+  }
+  20% {
+    transform: translate(-50%, 0) scale(0.9);
+    filter: drop-shadow(0 0 20px #fe2c55);
   }
   30% {
+    transform: translate(-50%, 0) scale(1.5);
+    filter: drop-shadow(0 0 50px #fe2c55);
+  }
+  40% {
     transform: translate(-50%, 0) scale(1);
   }
-  45% {
+  50% {
     transform: translate(-50%, 0) scale(1.3);
+    filter: drop-shadow(0 0 60px #fe2c55);
   }
-  60% {
+  65% {
     transform: translate(-50%, 0) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, -200px) scale(0.5);
+    transform: translate(-50%, -200px) scale(0.3);
+    opacity: 0;
+    filter: blur(5px);
+  }
+}
+
+@keyframes heartSplit1 {
+  0%, 30% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-60px, -40px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-120px, -150px) scale(0);
     opacity: 0;
   }
 }
 
-// 爆炸动画
+@keyframes heartSplit2 {
+  0%, 30% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(60px, -40px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(120px, -150px) scale(0);
+    opacity: 0;
+  }
+}
+
+// 爆炸动画 - 带粒子扩散
 .anim_explode {
   top: 50%;
   left: 50%;
-  animation: explode 2s ease-out forwards;
+  animation: explode 2.5s ease-out forwards;
+
+  .giftIcon {
+    animation: explodeIcon 2.5s ease-out forwards;
+  }
+
+  // 生成12个粒子
+  @for $i from 1 through 12 {
+    &::before {
+      content: '✨💫⭐🌟'  ;
+      position: absolute;
+      font-size: 20px;
+      animation: explodeParticle#{$i} 2s ease-out forwards;
+    }
+  }
 }
 
 @keyframes explode {
   0% {
-    transform: translate(-50%, -50%) scale(0) rotate(0deg);
+    transform: translate(-50%, -50%) scale(0);
     opacity: 0;
   }
-  20% {
-    transform: translate(-50%, -50%) scale(2) rotate(180deg);
+  15% {
+    transform: translate(-50%, -50%) scale(2.5);
     opacity: 1;
+    filter: drop-shadow(0 0 50px var(--gift-color, #70a1ff)) brightness(1.5);
   }
-  40% {
-    transform: translate(-50%, -50%) scale(1.5) rotate(360deg);
-    opacity: 1;
+  30% {
+    transform: translate(-50%, -50%) scale(1.8);
+    filter: drop-shadow(0 0 30px var(--gift-color, #70a1ff));
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(2.2);
   }
   100% {
-    transform: translate(-50%, -50%) scale(3) rotate(720deg);
+    transform: translate(-50%, -50%) scale(4);
     opacity: 0;
+    filter: blur(10px);
   }
 }
 
-// 火箭动画
+@keyframes explodeIcon {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(180deg) scale(1.2);
+  }
+  50% {
+    transform: rotate(360deg);
+  }
+  75% {
+    transform: rotate(540deg) scale(0.8);
+  }
+  100% {
+    transform: rotate(720deg);
+  }
+}
+
+// 火箭动画 - 带尾焰和震动
 .anim_rocket {
   bottom: 0;
   left: 50%;
-  animation: rocketLaunch 2s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+  animation: rocketLaunch 3s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+
+  .giftIcon {
+    animation: rocketShake 0.1s linear infinite;
+  }
+
+  // 尾焰效果
+  &::before {
+    content: '🔥';
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 50px;
+    animation: rocketFlame 3s ease-out forwards;
+    filter: blur(3px);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: 50%;
+    width: 30px;
+    height: 200px;
+    background: linear-gradient(to bottom, #ff6348, #ffa502, transparent);
+    transform: translateX(-50%);
+    animation: rocketTrail 3s ease-out forwards;
+    filter: blur(8px);
+  }
 }
 
 @keyframes rocketLaunch {
   0% {
-    transform: translate(-50%, 100%) scale(1) rotate(0deg);
+    transform: translate(-50%, 100%) scale(1);
     opacity: 1;
   }
+  10% {
+    transform: translate(-50%, 80%) scale(1.1);
+  }
   30% {
-    transform: translate(-50%, 0) scale(1.2) rotate(-5deg);
+    transform: translate(-50%, 20%) scale(1.3);
+    filter: drop-shadow(0 0 40px #ff6348);
   }
   60% {
-    transform: translate(-50%, -50vh) scale(1.5) rotate(5deg);
+    transform: translate(-50%, -50vh) scale(1.5);
+    filter: drop-shadow(0 0 60px #ff6348);
   }
   100% {
-    transform: translate(-50%, -120vh) scale(2) rotate(0deg);
+    transform: translate(-50%, -150vh) scale(2);
     opacity: 0;
   }
 }
 
-// 下雨动画
+@keyframes rocketShake {
+  0%, 100% {
+    transform: translateX(-2px) rotate(-2deg);
+  }
+  50% {
+    transform: translateX(2px) rotate(2deg);
+  }
+}
+
+@keyframes rocketFlame {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.3);
+  }
+}
+
+@keyframes rocketTrail {
+  0% {
+    height: 0;
+    opacity: 0;
+  }
+  20% {
+    height: 200px;
+    opacity: 0.8;
+  }
+  100% {
+    height: 400px;
+    opacity: 0;
+  }
+}
+
+// 下雨动画 - 多个雨滴 + 波纹效果
 .anim_rain {
-  top: 20%;
+  top: 0;
   left: 50%;
-  animation: rainFall 2s ease-in forwards;
+  animation: rainFall 2.5s ease-in forwards;
+
+  .giftIcon {
+    animation: rainSway 2.5s ease-in-out forwards;
+  }
+
+  // 波纹效果
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -100px;
+    left: 50%;
+    width: 100px;
+    height: 100px;
+    border: 3px solid var(--gift-color, #ff4757);
+    border-radius: 50%;
+    transform: translateX(-50%) scale(0);
+    animation: rainRipple 2.5s ease-out 1s forwards;
+  }
 }
 
 @keyframes rainFall {
@@ -426,103 +817,386 @@
     transform: translate(-50%, -100%) scale(0.5);
     opacity: 0;
   }
-  20% {
-    transform: translate(-50%, 0) scale(1);
+  15% {
+    transform: translate(-50%, 0) scale(1.2);
+    opacity: 1;
+    filter: drop-shadow(0 10px 20px var(--gift-color, #ff4757));
+  }
+  70% {
+    transform: translate(-50%, 50vh) scale(1);
     opacity: 1;
   }
-  80% {
-    transform: translate(-50%, 40vh) scale(1);
-    opacity: 1;
+  85% {
+    transform: translate(-50%, 60vh) scale(1.3);
+    filter: drop-shadow(0 0 30px var(--gift-color, #ff4757));
   }
   100% {
-    transform: translate(-50%, 60vh) scale(0.8);
+    transform: translate(-50%, 70vh) scale(0);
     opacity: 0;
   }
 }
 
-// 皇冠动画
+@keyframes rainSway {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-15deg);
+  }
+  75% {
+    transform: rotate(15deg);
+  }
+}
+
+@keyframes rainRipple {
+  0% {
+    transform: translateX(-50%) scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(3);
+    opacity: 0;
+  }
+}
+
+// 皇冠动画 - 金光闪耀 + 宝石闪烁
 .anim_crown {
-  top: 30%;
+  top: 20%;
   left: 50%;
-  animation: crownDrop 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  animation: crownDrop 3s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+
+  .giftIcon {
+    animation: crownShine 3s ease-in-out forwards;
+  }
+
+  // 光芒效果
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, transparent 70%);
+    transform: translate(-50%, -50%) scale(0);
+    animation: crownGlow 3s ease-out forwards;
+  }
+
+  // 星星效果
+  &::after {
+    content: '⭐✨⭐';
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    animation: crownStars 3s ease-out forwards;
+  }
 }
 
 @keyframes crownDrop {
   0% {
-    transform: translate(-50%, -200%) scale(0.5) rotate(-30deg);
+    transform: translate(-50%, -300%) scale(0.3) rotate(-45deg);
     opacity: 0;
-  }
-  40% {
-    transform: translate(-50%, 0) scale(1.3) rotate(10deg);
-    opacity: 1;
-  }
-  60% {
-    transform: translate(-50%, -20px) scale(1) rotate(-5deg);
-  }
-  80% {
-    transform: translate(-50%, 0) scale(1.1) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-50%, 100px) scale(0.8) rotate(0deg);
-    opacity: 0;
-  }
-}
-
-// 烟花动画
-.anim_firework {
-  top: 40%;
-  left: 50%;
-  animation: firework 3s ease-out forwards;
-
-  &::before,
-  &::after {
-    content: '✨';
-    position: absolute;
-    font-size: 30px;
-    animation: sparkle 3s ease-out forwards;
-  }
-
-  &::before {
-    animation-delay: 0.5s;
-  }
-
-  &::after {
-    animation-delay: 0.8s;
-  }
-}
-
-@keyframes firework {
-  0% {
-    transform: translate(-50%, 100vh) scale(0.5);
-    opacity: 1;
   }
   30% {
-    transform: translate(-50%, 0) scale(1);
+    transform: translate(-50%, 20px) scale(1.5) rotate(15deg);
     opacity: 1;
+    filter: drop-shadow(0 0 50px #ffd700);
+  }
+  45% {
+    transform: translate(-50%, -30px) scale(1.2) rotate(-10deg);
+  }
+  60% {
+    transform: translate(-50%, 10px) scale(1.3) rotate(5deg);
+  }
+  75% {
+    transform: translate(-50%, 0) scale(1.4) rotate(0deg);
+    filter: drop-shadow(0 0 80px #ffd700);
+  }
+  100% {
+    transform: translate(-50%, 150px) scale(0.5) rotate(0deg);
+    opacity: 0;
+    filter: blur(5px);
+  }
+}
+
+@keyframes crownShine {
+  0%, 100% {
+    filter: brightness(1);
+  }
+  25% {
+    filter: brightness(1.5) saturate(1.3);
   }
   50% {
-    transform: translate(-50%, 0) scale(2);
+    filter: brightness(2) saturate(1.5);
+  }
+  75% {
+    filter: brightness(1.3) saturate(1.2);
+  }
+}
+
+@keyframes crownGlow {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  30% {
+    transform: translate(-50%, -50%) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translate(-50%, 0) scale(3);
+    transform: translate(-50%, -50%) scale(2);
     opacity: 0;
   }
 }
 
-@keyframes sparkle {
-  0%, 30% {
-    transform: translate(0, 0) scale(0);
+@keyframes crownStars {
+  0% {
+    transform: translateX(-50%) scale(0);
     opacity: 0;
   }
-  50% {
-    transform: translate(var(--x, 50px), var(--y, -50px)) scale(1);
+  30% {
+    transform: translateX(-50%) scale(1);
     opacity: 1;
   }
   100% {
-    transform: translate(calc(var(--x, 50px) * 2), calc(var(--y, -50px) * 2)) scale(0);
+    transform: translateX(-50%) translateY(-100px) scale(0);
     opacity: 0;
+  }
+}
+
+// 烟花动画 - 多层爆发 + 拖尾
+.anim_firework {
+  bottom: 0;
+  left: 50%;
+  animation: fireworkLaunch 4s ease-out forwards;
+
+  .giftIcon {
+    animation: fireworkBurst 4s ease-out forwards;
+  }
+
+  // 多个爆炸粒子
+  &::before {
+    content: '🎇✨💫⭐🌟';
+    position: absolute;
+    font-size: 30px;
+    white-space: nowrap;
+    animation: fireworkSparkles 4s ease-out 1s forwards;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      var(--gift-color, #9b59b6) 0%,
+      rgba(155, 89, 182, 0.5) 30%,
+      transparent 70%
+    );
+    transform: scale(0);
+    animation: fireworkWave 4s ease-out 1.2s forwards;
+  }
+}
+
+@keyframes fireworkLaunch {
+  0% {
+    transform: translate(-50%, 100%) scale(0.8);
+    opacity: 1;
+  }
+  25% {
+    transform: translate(-50%, 30%) scale(1);
+    filter: drop-shadow(0 -30px 20px #ffa502);
+  }
+  30% {
+    transform: translate(-50%, 20%) scale(2);
+    filter: drop-shadow(0 0 60px var(--gift-color, #9b59b6));
+  }
+  50% {
+    transform: translate(-50%, 20%) scale(2.5);
+  }
+  100% {
+    transform: translate(-50%, 20%) scale(4);
+    opacity: 0;
+    filter: blur(10px);
+  }
+}
+
+@keyframes fireworkBurst {
+  0%, 25% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(0);
+  }
+  35% {
+    transform: scale(1.5);
+    filter: brightness(2);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes fireworkSparkles {
+  0% {
+    transform: translate(-50%, 0) scale(0);
+    opacity: 0;
+  }
+  20% {
+    transform: translate(-50%, 0) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -100px) scale(0) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+@keyframes fireworkWave {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3);
+    opacity: 0;
+  }
+}
+
+// ==================== 高级礼物专属动效 ====================
+
+// 豪华礼物全屏特效
+.luxuryEffect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 200;
+}
+
+.luxuryBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(255, 215, 0, 0.3) 0%,
+    transparent 50%
+  );
+  animation: luxuryPulse 3s ease-out forwards;
+}
+
+@keyframes luxuryPulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+}
+
+// Canvas粒子层
+.particleCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+// 礼物信息横幅
+.giftBanner {
+  position: absolute;
+  top: 25%;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.7) 20%,
+    rgba(0, 0, 0, 0.8) 50%,
+    rgba(0, 0, 0, 0.7) 80%,
+    transparent
+  );
+  animation: bannerSlide 3s ease-out forwards;
+}
+
+.bannerAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--gift-color, #ffd700);
+  margin-right: 12px;
+}
+
+.bannerContent {
+  display: flex;
+  flex-direction: column;
+}
+
+.bannerUser {
+  font-size: 26px;
+  color: #fff;
+  font-weight: 500;
+}
+
+.bannerGift {
+  font-size: 22px;
+  color: var(--gift-color, #ffd700);
+  margin-top: 4px;
+}
+
+.bannerIcon {
+  font-size: 60px;
+  margin-left: 16px;
+  animation: bannerIconBounce 0.5s ease-out infinite alternate;
+}
+
+@keyframes bannerSlide {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  15% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  85% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes bannerIconBounce {
+  from {
+    transform: scale(1) rotate(-5deg);
+  }
+  to {
+    transform: scale(1.2) rotate(5deg);
   }
 }
 
