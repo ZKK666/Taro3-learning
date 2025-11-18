@@ -92,6 +92,66 @@
   }
 }
 
+// ==================== 底部进度指示器 ====================
+
+.slideProgress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 60px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  padding: 0 40px;
+}
+
+.progressDots {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.progressDot {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+  transition: all 0.3s ease;
+
+  // 非激活的点变小
+  &:not(.activeDot) {
+    width: 16px;
+  }
+}
+
+.activeDot {
+  width: 40px;
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.progressFill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: #fff;
+  border-radius: 2px;
+  animation: progressAnimation 3s linear forwards;
+}
+
+@keyframes progressAnimation {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
 .empty {
   width: 100%;
   height: 100%;

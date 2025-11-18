@@ -251,6 +251,29 @@ export default function VideoFeed() {
                     </Text>
                   </View>
 
+                  {/* 底部进度指示器 */}
+                  <View className={styles.slideProgress}>
+                    {/* 进度点指示器 */}
+                    <View className={styles.progressDots}>
+                      {video.images.map((_, dotIndex) => (
+                        <View
+                          key={dotIndex}
+                          className={`${styles.progressDot} ${
+                            dotIndex === (slideIndexes[video.id] || 0) ? styles.activeDot : ''
+                          }`}
+                        >
+                          {/* 当前激活的点显示进度条动画 */}
+                          {dotIndex === (slideIndexes[video.id] || 0) && index === currentIndex && (
+                            <View
+                              className={styles.progressFill}
+                              key={`progress-${video.id}-${dotIndex}-${slideIndexes[video.id] || 0}`}
+                            />
+                          )}
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
                   {/* 图片类型标识 */}
                   <View className={styles.slideshowBadge}>
                     <View className={styles.imageIcon} />
